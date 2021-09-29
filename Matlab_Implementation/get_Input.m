@@ -20,6 +20,8 @@ TOL.A = 1e-6; % Absolute tolerance for MDNM
 TOL.R = 1e-3; % Relative tolerance for MDNM
 TOL.a = 1e-6; % Absolute tolerance for pertebation
 TOL.r = 1e-3; % Relative tolerance for pertebation
+TOL.delta = 0.2; 
+TOL.gamma = 0.5; 
 
 %% Residual Function Name
 SIM.Res_name = 'BVP_residual'; % File name associated with the residual function %%%%%%Not really used in Matlab so maybe won't be needed
