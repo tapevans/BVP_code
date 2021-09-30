@@ -99,6 +99,7 @@ while ~mesh_is_refined
     %% Check if the mesh is refined
     if FLAG.Do_Mesh_Refinement
         % check the mesh
+        [MESH, SV, SIM, TOL, FLAG,mesh_is_refined] = meshRefinement(MESH, SV, SIM, TOL, FLAG);
     else
         mesh_is_refined = true;
     end
