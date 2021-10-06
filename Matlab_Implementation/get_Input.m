@@ -3,7 +3,7 @@
 
 function [MESH, SIM, TOL, BC, FLAG] = get_Input()
 %% Domain Parameters
-MESH.jPoints = 3; % Number of control volumes
+MESH.jPoints = 10; % Number of control volumes
 MESH.L       = 1; % Length of domain in x-dir
 
 %% BC
@@ -40,6 +40,6 @@ SIM.SV_0 = 200 * ones(MESH.jPoints,1); %%%%%%%I don't know how this would look f
 
 
 %% Flags
-FLAG.Do_Mesh_Refinement = 1; % 1 if the algorithm should perform mesh refinement
+FLAG.Do_Mesh_Refinement = 0; % 1 if the algorithm should perform mesh refinement
 
 end

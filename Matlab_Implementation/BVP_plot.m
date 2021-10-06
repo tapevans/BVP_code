@@ -5,7 +5,7 @@ function BVP_plot(SV, MESH, SIM, SV_dir)
 figure
 hold on
 plot(MESH.x_vec,SV,'LineWidth',2)
-% plot(MESH.x_vec,SV_dir,'o','LineWidth',2)
+plot(MESH.x_vec,SV_dir,'o','LineWidth',2)
 
 xlabel('Domain')
 ylabel('Temperature (K)')

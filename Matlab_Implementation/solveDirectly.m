@@ -37,9 +37,9 @@ b(MESH.nSV, 1)         = BC.T_L;
 SV = A\b;
 
 %% Test LU Decomposition here
-[L,U] = lu(A);
-z     = L\b;
-SV_LU = U\z;
+% [L,U] = lu(A);
+% z     = L\b;
+% SV_LU = U\z;
 
-error_LU = SV_LU - SV
+% error_LU = SV_LU - SV
 end
