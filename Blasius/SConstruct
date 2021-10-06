@@ -1,0 +1,12 @@
+env = Environment(TARGET_ARCH='amd64', MSVC_VERSION='14.2')
+
+env['CXX'] = '$CC'
+env.Append(CCFLAGS=['/MD', '/nologo', '/D_SCL_SECURE_NO_WARNINGS', '/D_CRT_SECURE_NO_WARNINGS', '/Zi', '/Fd${TARGET}.pdb', '/EHsc'],
+           CPPPATH=['C:\\Gandhali\\cantera-23Aug\\canteraCSM\\include', 'C:\\Gandhali\\research\\boost_1_70_0'],
+           LINKFLAGS=['/nologo', '/DEBUG', '/NODEFAULTLIB:MSVCRTD'],
+           FRAMEWORKS=[])
+
+program = env.Program('blasius', ['main.cpp', 'Blasius.cpp'])
+Default(program)
+
+
