@@ -19,11 +19,13 @@ public:
     void setDependentVariableLimits(); //Placeholder for future
     void setTolerance(); //Placeholder for future
     void residual();
-    void checkLookAhead();
+    void checkStateVariableLimits();
+    void checkLookAhead(std::vector<double> tempSV);
     void checkSolutionTolerance();
     void checkMeshTolerance();
     void performNewtonInteration();
     void performMeshRefinement();
+    
 
 
 // Variables
@@ -32,6 +34,14 @@ public:
 
     bool meshRefined;
     bool foundSolution;
+    bool SVWithinLimits;
+    bool normIsSmaller;
     bool foundNextSV;
 
+    std::vector<double> currentSV;
+    std::vector<double> nextSV;
+    std::vector<double> currentCorrectionVector;
+    std::vector<double> nextCorrectionVector;
+
+    double lambda = 1.0;
 };

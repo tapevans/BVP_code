@@ -39,9 +39,24 @@ void BoundaryValueProblem::residual()
     std::cout<<"Calculating the residual vector\n";
 }
 
-void BoundaryValueProblem::checkLookAhead()
+void BoundaryValueProblem::checkStateVariableLimits()
+{
+    std::cout<<"Checking if all state variables are within the defined limits\n";
+}
+
+void BoundaryValueProblem::checkLookAhead(std::vector<double> tempSV)
 {
     std::cout<<"Checking if the new state vector meets look ahead tolerance\n";
+    if (normIsSmaller)
+    {
+        foundNextSV = true;
+        nextSV = tempSV;
+        // Set the next correction vector from what was calculated inside check Look Ahead so maybe just do this there
+    }
+    else
+    {
+        lambda = lambda * 0.5;
+    }
 }
 void BoundaryValueProblem::checkSolutionTolerance()
 {

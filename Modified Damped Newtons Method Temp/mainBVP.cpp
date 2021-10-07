@@ -36,27 +36,75 @@ int main ()
 
     test.meshRefined = false;
     test.foundSolution = false;
+    test.SVWithinLimits = true;
+    test.normIsSmaller = false;
     test.foundNextSV = false;
+
     countNextSV = 0; //Temporary
     countSolution = 0; //Temporary
     countMesh = 0; //Temporary
+    
+    int numIterations = 0;
+    int numJacobian = 0;
 
     while (!test.meshRefined)
     {
+        // Start Iterations
+        
         while (!test.foundSolution)
         {
-            while (!test.foundNextSV)
-            {
-                test.checkLookAhead();
-                if (countNextSV < 2)
+            numIterations++;
+            // Solve for the correction vector
+                // Calculate the Jacobian
+                if (numIterations == 1)
                 {
-                    countNextSV++;
+                    //Call the function that will solve for the Jacobian
+                }
+                
+                if (numJacobian < 20)
+                {
+                    // Keep the current Jacobian
                 }
                 else
                 {
-                    test.foundNextSV = true;
+                    //Call the function that will solve for the Jacobian
                 }
-            }
+                
+                // Calculate the residual based on current SV
+                    // Call the function that calculates the residual 
+
+                // Calculate the correction vector
+                    // Call the function or do that calculation here in this line 
+
+            // Solve for the next SV
+                
+
+                while (!test.foundNextSV)
+                {
+                    // Calculate a temporary next SV  (SV_temp = SV_current - lambda * currentCorrectionVector)
+                        std::vector<double> tempSV;
+                        //tempSV = test.currentSV - test.lambda * test.currentCorrectionVector;
+
+                    // Check if lambda meets tolerance
+                        // Are all the state variables within their defined limits?
+                            test.checkStateVariableLimits();
+                        // Does lambda meet the Look Ahead criteria
+                            test.checkLookAhead();
+                            
+                            
+                            
+
+
+                    
+                    if (countNextSV < 2)
+                    {
+                        countNextSV++;
+                    }
+                    else
+                    {
+                        test.foundNextSV = true;
+                    }
+                }
             test.checkSolutionTolerance();
             test.foundNextSV = false;
             countNextSV = 0;
