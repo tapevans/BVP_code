@@ -7,11 +7,13 @@ using namespace std;
 
 class BVP_Residual
 {
-// Functions
-void calculateResidual();
+    public:
+    // Functions
+        void calculateResidual();
 
-// Variables
-std::vector<std::vector<double> > resV;
+    // Variables
+        std::vector<std::vector<double> > resV;
+        int nVariables;
 
 
 

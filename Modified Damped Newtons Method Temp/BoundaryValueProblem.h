@@ -7,6 +7,7 @@ using namespace std;
 #include <vector>
 #include "Jacobian.h"
 #include "BVP_Residual.h"
+#include "Mesh.h"
 
 class BoundaryValueProblem
 {
@@ -31,6 +32,7 @@ public:
 // Variables
     Jacobian MyJacobian;
     BVP_Residual MyRes;
+    Mesh MyMesh;
 
     bool meshRefined;
     bool foundSolution;

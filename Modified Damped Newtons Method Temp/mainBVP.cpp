@@ -7,19 +7,29 @@
 
 //Used .\BVP.exe to actually run the executable in the terminal window
 
+
+
+
+
+
+
+
 int main ()
 {
     BoundaryValueProblem test;
 
-    //Read input file (may skip this)
-    test.readUserInput();
+    // Defining user inputs here (Eventually this should be a function that reads a text file)
+    test.MyMesh.L = 10;
+    test.MyMesh.jPoints = 10;
+    test.MyRes.nVariables = 3;
+    
+    
+    // Initialization
+    test.MyMesh.initializeMesh();
 
-    //Initialize variables from input file
-    test.setFlags();
-    test.setDependentVariableLimits();
-    test.setTolerance();
-    test.initialMesh();
-    test.initialSolution();
+
+    
+
 
     // Test input from user
     //int value;
@@ -87,9 +97,9 @@ int main ()
 
                     // Check if lambda meets tolerance
                         // Are all the state variables within their defined limits?
-                            test.checkStateVariableLimits();
+                            //test.checkStateVariableLimits();
                         // Does lambda meet the Look Ahead criteria
-                            test.checkLookAhead();
+                            //test.checkLookAhead();
                             
                             
                             
@@ -133,3 +143,23 @@ int main ()
 
     return 0;
 }
+
+/* Wait until there is an input file to read for these functions
+//Read input file (may skip this)
+test.readUserInput();
+
+//Initialize variables from input file
+test.setFlags();
+test.setDependentVariableLimits();
+test.setTolerance();
+test.initialMesh();
+test.initialSolution();
+*/
+
+/*
+//Print mesh
+for(int j = 0; j < (test.MyMesh.jPoints); j++)
+{
+std::cout<<"\n j = "<<j<<"\t x = "<< test.MyMesh.x[j];
+}
+*/
