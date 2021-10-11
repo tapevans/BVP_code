@@ -6,6 +6,8 @@
 % Outputs
 %   -
 
+% This line is a test for using GitHub
+
 function [MESH, SIM, TOL, FLAG] = BVP_initialization(MESH, SIM, TOL, FLAG) %%%% These inputs should just be a pointer?
 % Calculate initial discretization
 dx = MESH.L/(MESH.jPoints-1);
