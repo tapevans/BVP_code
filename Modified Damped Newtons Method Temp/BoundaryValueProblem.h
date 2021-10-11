@@ -14,18 +14,18 @@ class BoundaryValueProblem
 public:
     // Functions
     void readUserInput();
-    void initialMesh();
     void initialSolution();
     void setFlags(); //Placeholder for future
     void setDependentVariableLimits(); //Placeholder for future
     void setTolerance(); //Placeholder for future
-    void residual();
-    void checkStateVariableLimits();
-    void checkLookAhead(std::vector<double> tempSV);
-    void checkSolutionTolerance();
-    void checkMeshTolerance();
     void performNewtonInteration();
-    void performMeshRefinement();
+        void calcCorrectionVector();
+        void calcNextSV();
+            void checkSVLimits(std::vector<double> tempSV);
+            void checkLookAhead(std::vector<double> tempSV);
+        void checkSolutionTolerance();
+    void saveResults();
+    // Error handling function????
     
 
 
@@ -34,7 +34,6 @@ public:
     BVP_Residual MyRes;
     Mesh MyMesh;
 
-    bool meshRefined;
     bool foundSolution;
     bool SVWithinLimits;
     bool normIsSmaller;

@@ -12,6 +12,8 @@ class Mesh
         void initializeMesh();
         void refineMesh();
         void calculateSurfaceLocation();
+        void checkFirstOrderTol(); // This names should be changed to better represent the check
+        void checkSecondOrderTol(); // This names should be changed to better represent the check
 
 
     // Variables
@@ -22,5 +24,5 @@ class Mesh
         int jPoints;
         double L;
 
-        bool meshIsRefined = true; // Change this later when mesh refinement function is implemented
+        bool meshIsRefined;
 };

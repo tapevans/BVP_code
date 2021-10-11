@@ -11,15 +11,16 @@ using namespace std;
 
 class Jacobian
 {
-// Functions
-void calculatePerturbation();
-void residual();
-void calculateJacobian();
+public:
+    // Functions
+    void calculatePerturbation();
+    void residual();
+    void calculateJacobian();
 
 
-// Variables
-std::vector<std::vector<double> > jacM;
-std::vector<std::vector<double> > resV;
-std::vector<std::vector<double> > resPerV;
+    // Variables
+    std::vector<std::vector<double> > jacM;
+    std::vector<std::vector<double> > resV;
+    std::vector<std::vector<double> > resPerV;
 
 };

@@ -9,11 +9,6 @@
 
 
 
-
-
-
-
-
 int main ()
 {
     BoundaryValueProblem test;
@@ -21,125 +16,30 @@ int main ()
     // Defining user inputs here (Eventually this should be a function that reads a text file)
     test.MyMesh.L = 10;
     test.MyMesh.jPoints = 10;
+    test.MyMesh.meshIsRefined = true; //setting to TRUE will skip mesh refinement
     test.MyRes.nVariables = 3;
-    
+        // Need initial values
+
+
+
     
     // Initialization
     test.MyMesh.initializeMesh();
+    test.initialSolution();
 
-
-    
-
-
-    // Test input from user
-    //int value;
-    //std::cin >> value;
-
-    //Start algorithm
-    /*
-        while the mesh is unrefined, the solution is not within 
-        tolerance, and the next solution doesn't meet Look Ahead conditions
-    */
-    
-
-    int countNextSV, countSolution, countMesh;
-
-    test.meshRefined = false;
+    // Perform Modified Damped Newton's Method
     test.foundSolution = false;
-    test.SVWithinLimits = true;
-    test.normIsSmaller = false;
-    test.foundNextSV = false;
+    test.performNewtonIteration();
 
-    countNextSV = 0; //Temporary
-    countSolution = 0; //Temporary
-    countMesh = 0; //Temporary
-    
-    int numIterations = 0;
-    int numJacobian = 0;
-
-    while (!test.meshRefined)
+    // Perform mesh refinement
+    while (!test.MyMesh.meshIsRefined)
     {
-        // Start Iterations
-        
-        while (!test.foundSolution)
-        {
-            numIterations++;
-            // Solve for the correction vector
-                // Calculate the Jacobian
-                if (numIterations == 1)
-                {
-                    //Call the function that will solve for the Jacobian
-                }
-                
-                if (numJacobian < 20)
-                {
-                    // Keep the current Jacobian
-                }
-                else
-                {
-                    //Call the function that will solve for the Jacobian
-                }
-                
-                // Calculate the residual based on current SV
-                    // Call the function that calculates the residual 
-
-                // Calculate the correction vector
-                    // Call the function or do that calculation here in this line 
-
-            // Solve for the next SV
-                
-
-                while (!test.foundNextSV)
-                {
-                    // Calculate a temporary next SV  (SV_temp = SV_current - lambda * currentCorrectionVector)
-                        std::vector<double> tempSV;
-                        //tempSV = test.currentSV - test.lambda * test.currentCorrectionVector;
-
-                    // Check if lambda meets tolerance
-                        // Are all the state variables within their defined limits?
-                            //test.checkStateVariableLimits();
-                        // Does lambda meet the Look Ahead criteria
-                            //test.checkLookAhead();
-                            
-                            
-                            
-
-
-                    
-                    if (countNextSV < 2)
-                    {
-                        countNextSV++;
-                    }
-                    else
-                    {
-                        test.foundNextSV = true;
-                    }
-                }
-            test.checkSolutionTolerance();
-            test.foundNextSV = false;
-            countNextSV = 0;
-            if (countSolution < 2)
-            {
-                countSolution++;
-            }
-            else
-            {
-                test.foundSolution = true;
-            }
-        }
-        test.checkMeshTolerance();
-        test.foundSolution = false;
-        countSolution = 0;
-        if (countMesh < 2)
-        {
-            countMesh++;
-        }
-        else
-        {
-            test.meshRefined = true;
-        }
+        test.MyMesh.refineMesh();
+        test.performNewtonIteration();
     }
-    
+
+    // Save results
+    test.saveResults();  
 
     return 0;
 }
@@ -156,6 +56,8 @@ test.initialMesh();
 test.initialSolution();
 */
 
+
+
 /*
 //Print mesh
 for(int j = 0; j < (test.MyMesh.jPoints); j++)
@@ -163,3 +65,9 @@ for(int j = 0; j < (test.MyMesh.jPoints); j++)
 std::cout<<"\n j = "<<j<<"\t x = "<< test.MyMesh.x[j];
 }
 */
+
+
+
+    // Test input from user
+    //int value;
+    //std::cin >> value;
