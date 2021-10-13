@@ -3,15 +3,37 @@
 #include <iostream>
 using namespace std;
 
+BoundaryValueProblem::BoundaryValueProblem()
+{
+    absTol = 1e-6;
+    relTol = 1e-3;
+    
+    foundSolution= true;
+    SVWithinLimits= true;
+    normIsSmaller= true;
+    foundNextSV= true;
+}
 
 void BoundaryValueProblem::readUserInput()
 {
     std::cout<<"Reading user input \n";
 }
 
-void BoundaryValueProblem::initialSolution()
+void BoundaryValueProblem::initialSolution(Mesh* ptrMesh, Residual* ptrRes)
 {
     std::cout<<"Setting the initial solution\n";
+    
+    currentSVM.resize(ptrRes->nVariables, std::vector<double>(ptrMesh->jPoints, 0.0));
+    for (int i = 0; i < ptrRes->nVariables; i++)
+    {
+        for(int j = 0; j< ptrMesh->jPoints; j++)
+        {
+            currentSVM[i][j] = ( (ptrRes->IC[i][1] - ptrRes->IC[i][0])/(ptrMesh->x[ptrMesh->jPoints-1] - ptrMesh->x[0]) ) 
+                                * ptrMesh->x[j] + ptrRes->IC[i][0]; // Slope eqn for a line
+        }
+    }
+    
+    currentSVV = ptrRes->matrix2Vector(currentSVM, ptrMesh->jPoints);
 }
 
 void BoundaryValueProblem::setFlags()   // PLACEHOLDER
@@ -29,44 +51,52 @@ void BoundaryValueProblem::setTolerance() // PLACEHOLDER
     std::cout<<"Setting Tolerances\n";
 }
 
-void BoundaryValueProblem::performNewtonInteration()
+void BoundaryValueProblem::performNewtonIteration(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 {
-    std::cout<<"Performing Modified Damped Newtons Method to find the solution\n";
+    std::cout<<"\nPerforming Modified Damped Newtons Method to find the solution\n";
     while (!foundSolution)
     {
         foundNextSV = false;
         lambda = 1.0; 
-        calcCorrectionVector();
+        calcCorrectionVector(ptrMesh, ptrRes, ptrJac);
         calcNextSV();
         checkSolutionTolerance(); //This will determine if another MDNM needs to be performed
     }    
 }
 
-void BoundaryValueProblem::calcCorrectionVector()
+
+void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 {
-    std::cout<<"Calculating correction vector\n";
-    // Calculate Jacobian
-    MyJacobian.calculateJacobian();
-    
+
+    std::cout<<"\tCalculating correction vector\n";
+ 
     // Calculate Residual
-    MyRes.calculateResidual();
+    std::vector<double> residual;
+    residual = (ptrRes->calculateResidual(currentSVV, ptrMesh));
+
+    /*   
+    // Calculate Jacobian
+    ptrJac->calculateJacobian(ptrMesh, ptrRes);
     
     // Calculate inverse of the Jacobian **********
 
+    
     // Solve for correction vector
-    currentCorrectionVector = (MyJacobian.jacM)^(-1) * MyRes.resV; //****** Figure out how to multiply a matrix by a vector
+    currentCorrectionVector = (ptrJac->jacM)^(-1) * residual; //****** Figure out how to multiply a matrix by a vector
+    */
 }
 
 void BoundaryValueProblem::calcNextSV()
 {
-    std::cout<<"Calculating the next solution vector\n";
     
+    std::cout<<"\tCalculating the next solution vector\n";
+    /*
     // while a nextSV has not been found
     while (!foundNextSV)
     {
         // Calculate a temporary SV
         std::vector<double> tempSV;
-        tempSV = currentSV - lambda * currentCorrectionVector;
+        tempSV = currentSVV - lambda * currentCorrectionVector;
 
         // Check if this SV is within the limits
         checkSVLimits(tempSV);
@@ -87,23 +117,26 @@ void BoundaryValueProblem::calcNextSV()
             lambda = lambda * 0.5;
         }
     }
+    */
 }
+
 
 void BoundaryValueProblem::checkSVLimits(std::vector<double> tempSV)
 {
-    std::cout<<"Checking if all state variables are within the defined limits\n";
+    std::cout<<"\t\tChecking if all state variables are within the defined limits\n";
     SVWithinLimits = true; // This function needs to be built
 }
 
 void BoundaryValueProblem::checkLookAhead(std::vector<double> tempSV)
 {
-    std::cout<<"Checking if the new state vector meets look ahead tolerance\n";
+    std::cout<<"\t\tChecking if the new state vector meets look ahead tolerance\n";
 
 
 }
+
 void BoundaryValueProblem::checkSolutionTolerance()
 {
-    std::cout<<"Checking if the latest solution is within tolerance\n";
+    std::cout<<"\tChecking if the latest solution is within tolerance\n";
     // norm(next(or current) correction vector) < max of (  Abs_tol or Rel_tol*SV_next (or cuurent?)  )
     if (SVWithinLimits)
     {
@@ -116,102 +149,3 @@ void BoundaryValueProblem::saveResults()
     std::cout<<"Saving the results to a file\n";
 }
 
- /*
-    int countNextSV, countSolution, countMesh;
-
-    test.meshRefined = false;
-    test.foundSolution = false;
-    test.SVWithinLimits = true;
-    test.normIsSmaller = false;
-    test.foundNextSV = false;
-
-    countNextSV = 0; //Temporary
-    countSolution = 0; //Temporary
-    countMesh = 0; //Temporary
-    
-    int numIterations = 0;
-    int numJacobian = 0;
-
-    while (!test.meshRefined)
-    {
-        // Start Iterations
-        
-        while (!test.foundSolution)
-        {
-            numIterations++;
-            // Solve for the correction vector
-                // Calculate the Jacobian
-                if (numIterations == 1)
-                {
-                    //Call the function that will solve for the Jacobian
-                }
-                
-                if (numJacobian < 20)
-                {
-                    // Keep the current Jacobian
-                }
-                else
-                {
-                    //Call the function that will solve for the Jacobian
-                }
-                
-                // Calculate the residual based on current SV
-                    // Call the function that calculates the residual 
-
-                // Calculate the correction vector
-                    // Call the function or do that calculation here in this line 
-
-            // Solve for the next SV
-                
-
-                while (!test.foundNextSV)
-                {
-                    // Calculate a temporary next SV  (SV_temp = SV_current - lambda * currentCorrectionVector)
-                        std::vector<double> tempSV;
-                        //tempSV = test.currentSV - test.lambda * test.currentCorrectionVector;
-
-                    // Check if lambda meets tolerance
-                        // Are all the state variables within their defined limits?
-                            //test.checkStateVariableLimits();
-                        // Does lambda meet the Look Ahead criteria
-                            //test.checkLookAhead();
-                            
-                            
-                            
-
-
-                    
-                    if (countNextSV < 2)
-                    {
-                        countNextSV++;
-                    }
-                    else
-                    {
-                        test.foundNextSV = true;
-                    }
-                }
-            test.checkSolutionTolerance();
-            test.foundNextSV = false;
-            countNextSV = 0;
-            if (countSolution < 2)
-            {
-                countSolution++;
-            }
-            else
-            {
-                test.foundSolution = true;
-            }
-        }
-        test.checkMeshTolerance();
-        test.foundSolution = false;
-        countSolution = 0;
-        if (countMesh < 2)
-        {
-            countMesh++;
-        }
-        else
-        {
-            test.meshRefined = true;
-        }
-    }
-    */

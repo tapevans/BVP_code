@@ -1,6 +1,11 @@
 
 #include "Mesh.h"
 
+Mesh::Mesh()
+{
+    delta = 0.2;
+    gamma = 0.5;
+}
 
 void Mesh::initializeMesh()
 {
