@@ -10,43 +10,46 @@ Residual::Residual()
     nVariables = 3;
 }
 
-//void BVP_Residual::calculateResidual(std::vector<std::vector<double> > depM, int jPoints, std::vector<double> x)
-std::vector<double> Residual::calculateResidual(std::vector<double> depV, Mesh* ptrMesh)
+//void BVP_Residual::calculateResidual(std::vector<std::vector<double> > SV, int jPoints, std::vector<double> x)
+MatrixXd Residual::calculateResidual(MatrixXd SV, Mesh* ptrMesh)
 {
-    std::cout<<"\t\t\tCalculating residual inside class residual\n";
+    //std::cout<<"\t\t\tCalculating residual inside class residual\n";
 
     // Reshape the incoming vector
-    //***********depV -> depM
-
-    resM.resize(nVariables, std::vector<double>(ptrMesh->jPoints, 0.0));
+    SV.resize(nVariables, ptrMesh->jPoints);
+    
+    //Create Residual matrix
+    MatrixXd res;
+    res.resize(nVariables, ptrMesh->jPoints);
 
     // Plate surface boundary
-    resM[Nf][0] = depM[Nf][0] - BC[Nf][0]; 
-    resM[Ng][0] = depM[Ng][0] - BC[Ng][0]; 
-    resM[NT][0] = depM[NT][0] - BC[NT][0]; 
+    res(Nf,0) = SV(Nf,0) - BC(Nf,0); 
+    res(Ng,0) = SV(Ng,0) - BC(Ng,0); 
+    res(NT,0) = SV(NT,0) - BC(NT,0); 
 
     // Interior 
     // x_vector is not defined in this class. How can it call reference to the mesh class??*****
     for(int j = 1; j < (ptrMesh->jPoints-1); j++)
     {
-        resM[Nf][j] = (depM[Nf][j] - depM[Nf][j-1])/ (ptrMesh->x[j] - ptrMesh->x[j-1]) - depM[Ng][j];
-        resM[Ng][j] = depM[Nf][j] * (depM[Ng][j] - depM[Ng][j-1]) /  (ptrMesh->x[j] - ptrMesh->x[j-1]) 
-                    + 2 * (depM[Ng][j - 1] - 2 * depM[Ng][j]  + depM[Ng][j + 1]) / ((ptrMesh->x[j] - ptrMesh->x[j-1])* (ptrMesh->x[j] - ptrMesh->x[j-1]));
-        resM[NT][j] = Pr * depM[Nf][j] * (depM[NT][j+1] - depM[NT][j])/ (ptrMesh->x[j] - ptrMesh->x[j-1])
-                    + 2 * (depM[NT][j - 1] - 2 * depM[NT][j]  + depM[NT][j + 1]) / ((ptrMesh->x[j] - ptrMesh->x[j-1])* (ptrMesh->x[j] - ptrMesh->x[j-1]));
+        res(Nf,j) = (SV(Nf,j) - SV(Nf,j-1))/ (ptrMesh->x(j) - ptrMesh->x(j-1)) - SV(Ng,j);
+        res(Ng,j) = SV(Nf,j) * (SV(Ng,j) - SV(Ng,j-1)) /  (ptrMesh->x(j) - ptrMesh->x(j-1)) 
+                    + 2 * (SV(Ng,j - 1) - 2 * SV(Ng,j)  + SV(Ng,j + 1)) / ((ptrMesh->x(j) - ptrMesh->x(j-1))* (ptrMesh->x(j) - ptrMesh->x(j-1)));
+        res(NT,j) = Pr * SV(Nf,j) * (SV(NT,j+1) - SV(NT,j))/ (ptrMesh->x(j) - ptrMesh->x(j-1))
+                    + 2 * (SV(NT,j - 1) - 2 * SV(NT,j)  + SV(NT,j + 1)) / ((ptrMesh->x(j) - ptrMesh->x(j-1))* (ptrMesh->x(j) - ptrMesh->x(j-1)));
     }
 
     // Outer free flow boundary
-    resM[Nf][ptrMesh->jPoints-1] = (depM[Nf][ptrMesh->jPoints-1] - depM[Nf][ptrMesh->jPoints-2])/ (ptrMesh->x[ptrMesh->jPoints-1] - ptrMesh->x[ptrMesh->jPoints-2]) 
-                         - depM[Ng][ptrMesh->jPoints-1];
-    resM[Ng][ptrMesh->jPoints-1] =  depM[Ng][ptrMesh->jPoints-1] - BC[Ng][1];
-    resM[NT][ptrMesh->jPoints-1] =  depM[NT][ptrMesh->jPoints-1] - BC[NT][1];
+    res(Nf,ptrMesh->jPoints-1) = (SV(Nf,ptrMesh->jPoints-1) - SV(Nf,ptrMesh->jPoints-2))/ (ptrMesh->x(ptrMesh->jPoints-1) - ptrMesh->x(ptrMesh->jPoints-2)) 
+                         - SV(Ng,ptrMesh->jPoints-1);
+    res(Ng,ptrMesh->jPoints-1) =  SV(Ng,ptrMesh->jPoints-1) - BC(Ng,1);
+    res(NT,ptrMesh->jPoints-1) =  SV(NT,ptrMesh->jPoints-1) - BC(NT,1);
 
     // Reshape the residual function to a vector form
-    resV = matrix2Vector(resM, ptrMesh->jPoints);
-    return resV;
+    res.resize(nVariables*(ptrMesh->jPoints),1);
+    return res;
 }
 
+/*
 std::vector<double> Residual::matrix2Vector(std::vector<std::vector<double> > mat , int jPoints)
 {
     std::vector<double> vec;
@@ -55,7 +58,7 @@ std::vector<double> Residual::matrix2Vector(std::vector<std::vector<double> > ma
     {
         for(int n = 0; n<nVariables; n++)
         {
-            vec[j*nVariables +n] = mat[n][j];
+            vec(j*nVariables +n) = mat(n,j);
         }
     }
     return vec;
@@ -70,8 +73,8 @@ std::vector<std::vector<double> > Residual::vector2Matrix(std::vector<double> ve
     {
         j = (k - k%nVariables)/nVariables;
         n = k%nVariables;
-        mat[n][j] = vec[k];
+        mat(n,j) = vec(k);
     }
     return mat;
 }
-
+*/

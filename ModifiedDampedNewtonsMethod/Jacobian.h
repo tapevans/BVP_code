@@ -8,22 +8,19 @@ Jacobian
 #include "Residual.h"
 #include "Mesh.h"
 
-using namespace std;
-#include <vector>
-
 class Jacobian
 {
 public:
     // Constructor
         Jacobian();
     // Functions
-    void calculateJacobian(std::vector<double>, Mesh*, Residual*);
-        void calculatePerturbation(std::vector<double> SV);
+    void calculateJacobian(MatrixXd, Mesh*, Residual*);
+        void calculatePerturbation(MatrixXd);
 
 
     // Variables
-    std::vector<std::vector<double> > jacM;
-    std::vector<std::vector<double> > perV;
+    MatrixXd jac; //Jacobian Matrix
+    MatrixXd per; //Perturbation vector
 
     int totSV;
 

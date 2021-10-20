@@ -22,18 +22,17 @@ void BoundaryValueProblem::readUserInput()
 void BoundaryValueProblem::initialSolution(Mesh* ptrMesh, Residual* ptrRes)
 {
     std::cout<<"Setting the initial solution\n";
-    
-    currentSVM.resize(ptrRes->nVariables, std::vector<double>(ptrMesh->jPoints, 0.0));
-    for (int i = 0; i < ptrRes->nVariables; i++)
+
+    currentSV.resize((ptrRes->nVariables), (ptrMesh->jPoints));
+
+    for (int i = 0; i < (ptrRes->nVariables); i++)
     {
-        for(int j = 0; j< ptrMesh->jPoints; j++)
+        for(int j = 0; j< (ptrMesh->jPoints); j++)
         {
-            currentSVM[i][j] = ( (ptrRes->IC[i][1] - ptrRes->IC[i][0])/(ptrMesh->x[ptrMesh->jPoints-1] - ptrMesh->x[0]) ) 
-                                * ptrMesh->x[j] + ptrRes->IC[i][0]; // Slope eqn for a line
+            currentSV(i,j) = ( (ptrRes->IC(i,1) - ptrRes->IC(i,0))/(ptrMesh->x(ptrMesh->jPoints-1) - ptrMesh->x(0)) ) 
+                                * ptrMesh->x(j) + ptrRes->IC(i,0); // Slope eqn for a line
         }
     }
-    
-    currentSVV = ptrRes->matrix2Vector(currentSVM, ptrMesh->jPoints);
 }
 
 void BoundaryValueProblem::setFlags()   // PLACEHOLDER
@@ -68,35 +67,31 @@ void BoundaryValueProblem::performNewtonIteration(Mesh* ptrMesh, Residual* ptrRe
 void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 {
 
-    std::cout<<"\tCalculating correction vector\n";
+    //std::cout<<"\tCalculating correction vector\n";
  
     // Calculate Residual
-    std::vector<double> residual;
-    residual = (ptrRes->calculateResidual(currentSVV, ptrMesh));
-
-    /*   
+    MatrixXd residual;
+    residual = (ptrRes->calculateResidual(currentSV, ptrMesh));
+ 
     // Calculate Jacobian
-    ptrJac->calculateJacobian(ptrMesh, ptrRes);
-    
-    // Calculate inverse of the Jacobian **********
-
+    ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes);
     
     // Solve for correction vector
-    currentCorrectionVector = (ptrJac->jacM)^(-1) * residual; //****** Figure out how to multiply a matrix by a vector
-    */
+    currentCorrectionVector = (ptrJac->jac.inverse()) * residual; 
+    std::cout << "Calculation of the correction vector is: \n" << currentCorrectionVector << std::endl;
 }
 
 void BoundaryValueProblem::calcNextSV()
 {
     
-    std::cout<<"\tCalculating the next solution vector\n";
+    std::cout<<"\nCalculating the next solution vector\n";
     /*
     // while a nextSV has not been found
     while (!foundNextSV)
     {
         // Calculate a temporary SV
         std::vector<double> tempSV;
-        tempSV = currentSVV - lambda * currentCorrectionVector;
+        tempSV = currentSV - lambda * currentCorrectionVector;
 
         // Check if this SV is within the limits
         checkSVLimits(tempSV);
@@ -121,13 +116,13 @@ void BoundaryValueProblem::calcNextSV()
 }
 
 
-void BoundaryValueProblem::checkSVLimits(std::vector<double> tempSV)
+void BoundaryValueProblem::checkSVLimits(MatrixXd tempSV)
 {
     std::cout<<"\t\tChecking if all state variables are within the defined limits\n";
     SVWithinLimits = true; // This function needs to be built
 }
 
-void BoundaryValueProblem::checkLookAhead(std::vector<double> tempSV)
+void BoundaryValueProblem::checkLookAhead(MatrixXd tempSV)
 {
     std::cout<<"\t\tChecking if the new state vector meets look ahead tolerance\n";
 

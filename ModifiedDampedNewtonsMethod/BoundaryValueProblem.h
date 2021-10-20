@@ -11,8 +11,8 @@ This class will be used to solve boundary value problems using the Modified Damp
 #include "Residual.h"
 #include "Jacobian.h"
 
-using namespace std;
-#include <vector>
+//using namespace std;
+
 
 class BoundaryValueProblem
 {
@@ -28,8 +28,8 @@ public:
     void performNewtonIteration(Mesh*, Residual*, Jacobian*);
         void calcCorrectionVector(Mesh*, Residual*, Jacobian*);
         void calcNextSV();
-            void checkSVLimits(std::vector<double> tempSV);
-            void checkLookAhead(std::vector<double> tempSV);
+            void checkSVLimits(MatrixXd tempSV);
+            void checkLookAhead(MatrixXd tempSV);
         void checkSolutionTolerance();
     void saveResults();
     // Error handling function????
@@ -46,12 +46,12 @@ public:
     bool normIsSmaller;
     bool foundNextSV;
 
-    std::vector<double> currentSVV;
-    std::vector<double> nextSV;
-    std::vector<double> currentCorrectionVector;
-    std::vector<double> nextCorrectionVector;
+    MatrixXd currentSV;
+    MatrixXd nextSV;
+    MatrixXd currentCorrectionVector;
+    MatrixXd nextCorrectionVector;
 
-    std::vector<std::vector<double> > currentSVM;
+    //MatrixXd currentSVM;
 
     double lambda; // Damping factor
     double absTol; // Absolute tolerance for the solution

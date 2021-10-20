@@ -11,6 +11,8 @@ Mesh class
 
 using namespace std;
 #include <vector>
+#include <Eigen/Eigen>
+using namespace Eigen;
 
 class Mesh
 {
@@ -26,9 +28,9 @@ class Mesh
 
 
     // Variables
-        std::vector<double> x;
-        std::vector<double> xMinus;
-        std::vector<double> xPositive;
+        RowVectorXd x;
+        RowVectorXd xMinus;
+        RowVectorXd xPositive;
         
         int jPoints;
 
