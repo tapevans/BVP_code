@@ -58,8 +58,11 @@ void BoundaryValueProblem::performNewtonIteration(Mesh* ptrMesh, Residual* ptrRe
         foundNextSV = false;
         lambda = 1.0; 
         calcCorrectionVector(ptrMesh, ptrRes, ptrJac);
-        calcNextSV();
-        checkSolutionTolerance(); //This will determine if another MDNM needs to be performed
+        foundSolution = true;///////////////////Remove this to test the next section
+        /* 
+        calcNextSV(ptrMesh, ptrRes, ptrJac);
+        checkSolutionTolerance(); //This will determine if another MDNM needs to be performed 
+        */
     }    
 }
 
@@ -79,25 +82,28 @@ void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes,
     // Solve for correction vector
     currentCorrectionVector = (ptrJac->jac.inverse()) * residual; 
     std::cout << "Calculation of the correction vector is: \n" << currentCorrectionVector << std::endl;
+    
+    //Calculate the norm of the correction vector
+    currentNorm = currentCorrectionVector.norm();
 }
 
-void BoundaryValueProblem::calcNextSV()
+void BoundaryValueProblem::calcNextSV(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 {
     
     std::cout<<"\nCalculating the next solution vector\n";
-    /*
+    
     // while a nextSV has not been found
     while (!foundNextSV)
     {
         // Calculate a temporary SV
-        std::vector<double> tempSV;
+        MatrixXd tempSV;
         tempSV = currentSV - lambda * currentCorrectionVector;
 
         // Check if this SV is within the limits
-        checkSVLimits(tempSV);
+        checkSVLimits(tempSV); // This currently does nothing
 
         // Check if the damping is satisfied
-        checkLookAhead(tempSV);
+        checkLookAhead(tempSV, ptrMesh, ptrRes, ptrJac);
 
         // Determine if the solution should be kept or if a new Jacobian should be calculated
         // If keeping the solution, set tempSV to nextSV
@@ -111,10 +117,9 @@ void BoundaryValueProblem::calcNextSV()
         {
             lambda = lambda * 0.5;
         }
+        std::cout<< "lambda is: " << lambda << std::endl;
     }
-    */
 }
-
 
 void BoundaryValueProblem::checkSVLimits(MatrixXd tempSV)
 {
@@ -122,21 +127,47 @@ void BoundaryValueProblem::checkSVLimits(MatrixXd tempSV)
     SVWithinLimits = true; // This function needs to be built
 }
 
-void BoundaryValueProblem::checkLookAhead(MatrixXd tempSV)
+void BoundaryValueProblem::checkLookAhead(MatrixXd tempSV, Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 {
     std::cout<<"\t\tChecking if the new state vector meets look ahead tolerance\n";
+    
+    // Calculate the next correction vector from the next SV
+    MatrixXd tempRes;
+    tempRes = (ptrRes->calculateResidual(tempSV, ptrMesh));
+    nextCorrectionVector = (ptrJac->jac.inverse()) * tempRes;
+    
+    //Calculate the norm of the current and next correction vectors
+    nextNorm = nextCorrectionVector.norm();
+    
+    std::cout << "The norm of the current correction vector is: " << currentNorm << std::endl;
+    std::cout << "The norm of the next correction vector is: " << nextNorm << std::endl;
 
-
+    if (nextNorm < currentNorm)
+    {
+        normIsSmaller = true;
+    }
+    else
+    {
+        normIsSmaller = false;
+    }
 }
 
 void BoundaryValueProblem::checkSolutionTolerance()
 {
     std::cout<<"\tChecking if the latest solution is within tolerance\n";
-    // norm(next(or current) correction vector) < max of (  Abs_tol or Rel_tol*SV_next (or cuurent?)  )
-    if (SVWithinLimits)
+    // norm(next(or current) correction vector) < max of (  Abs_tol or Rel_tol*SV_next (or curent?)  )
+    double maxTol;
+    maxTol = std::max(absTol,relTol*nextSV.norm());
+
+    if (nextNorm < maxTol)
     {
         foundSolution = true;
     }
+    else
+    {
+        // Increase the number on Jacobian count
+    }
+    currentSV = nextSV;
 }
 
 void BoundaryValueProblem::saveResults()

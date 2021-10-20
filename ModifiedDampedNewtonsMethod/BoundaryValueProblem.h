@@ -27,9 +27,9 @@ public:
     void setTolerance(); //Placeholder for future
     void performNewtonIteration(Mesh*, Residual*, Jacobian*);
         void calcCorrectionVector(Mesh*, Residual*, Jacobian*);
-        void calcNextSV();
+        void calcNextSV(Mesh*, Residual*, Jacobian*);
             void checkSVLimits(MatrixXd tempSV);
-            void checkLookAhead(MatrixXd tempSV);
+            void checkLookAhead(MatrixXd tempSV, Mesh*, Residual*, Jacobian*);
         void checkSolutionTolerance();
     void saveResults();
     // Error handling function????
@@ -56,7 +56,7 @@ public:
     double lambda; // Damping factor
     double absTol; // Absolute tolerance for the solution
     double relTol; // Relative tolerance for the solution
-
+    double currentNorm, nextNorm; //Current and next norm of the correction vector
 
 
 };

@@ -154,7 +154,8 @@ int main ()
     BVPsolver.foundSolution = false;
     
     BVPsolver.performNewtonIteration(ptrMesh, ptrRes, ptrJac);
-    
+    double temp;
+    std::cin >> temp;
     /*
     std::cout << "\nThe first calculated residual is: \n";
     for (int i = 0; i < myRes.nVariables; i++) 
