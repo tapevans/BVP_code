@@ -1,11 +1,11 @@
 /*
 Residual
+This is a class that contains all variables and functions needed to calculate the residual
 */
+
 #ifndef RESIDUAL_H
 #define RESIDUAL_H
 
-//#include "BoundaryValueProblem.h"
-//#include "Jacobian.h"
 #include "Mesh.h"
 
 using namespace std;
@@ -13,31 +13,23 @@ using namespace std;
 
 class Residual
 {
-    public:
+public:
     // Constructor
-        Residual();
+        Residual();                                     // Defines the pointers and number of dependent variables in the system when an instance of class Residual is created
+
     // Functions
-        //void initializeParameters();
-        MatrixXd calculateResidual(MatrixXd , Mesh*); // Residual Function
-        //std::vector<double> matrix2Vector(std::vector<std::vector<double> >, int ); // Convert a matrix into a vector
-        //std::vector<std::vector<double> > vector2Matrix(std::vector<double>, int ); // Convert a vector into a matrix
+        MatrixXd calculateResidual(MatrixXd , Mesh*);   // Residual Function
 
     // Variables
-        int Nf, Ng, NT; // Dependent variables' offset
-        int nVariables; // Number of dependent variables
-        //int jPoints; // Number of mesh points, defined from main*****
+        int Nf, Ng, NT;                                 // Dependent variables' pointers
+        int nVariables;                                 // Number of dependent variables
 
-        Matrix<double, Dynamic, 2> BC; // This is more like the limits
-        Matrix<double, Dynamic, 2> IC; // This is the initial boundary conditions
-
-        // Residual Vectors 
-        MatrixXd res;
+        Matrix<double, Dynamic, 2> BC;                  // Boundary conditions for each dependent variable
+        Matrix<double, Dynamic, 2> IC;                  // Initial guess/seeding for the algorithm
+        MatrixXd res;                                   // Residual vectors  ////-------------- if the calculate residual function is returning a matrix, does this res need to be stored for later access? does it take up more memory?
 
         // Properties
         double Pr; //Prandtl number //Don't know if this should remain here***** 
-
-
-
 };
 
 #endif //RESIDUAL_H

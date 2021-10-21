@@ -11,7 +11,7 @@ plot(MESH.x_vec,SV(SIM.Ng,:),'LineWidth',2,'DisplayName','g')
 lgn = legend;
 xlabel('\eta')
 ylabel('f,g')
-xlim([0,6])
+xlim([0,MESH.L])
 ylim([0,4.5])
 %% Plot iteration results
 

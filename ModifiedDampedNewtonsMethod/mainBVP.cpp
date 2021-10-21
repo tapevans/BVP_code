@@ -25,21 +25,9 @@
 // Main code to solve BVP
 int main ()
 {   
-    /* MatrixXd m(4,1);
-    m << 1,2,3,4;
-    MatrixXd something(4,1);
-    something << 3.0, 7.0, 10.0, 9.0;
-    std::cout  << m << std::endl<< std::endl;
-    MatrixXd temp;
-    for (int i = 0; i < 4; i++)
-    {
-        temp = m;
-        temp(i) += something(i);
-        std::cout  << temp - m << std::endl<< std::endl;
-    } */
-
+    // Create an instance of each of the needed classes: Mesh, Residual, BoundaryValueProblem, Jacobian
     Mesh myMesh;
-    Mesh *ptrMesh; // Pointer to a class
+    Mesh *ptrMesh; // Pointer of type Mesh class
     ptrMesh = &myMesh; // Sets the address of the class I created to the pointer
 
     Residual myRes;
@@ -61,12 +49,12 @@ int main ()
         myMesh.meshIsRefined = true; //setting to TRUE will skip mesh refinement
         // Residual
         myRes.nVariables = 3;
-        // Boundary Conditions (Limits?)
+        // Boundary Conditions
         myRes.BC.resize(myRes.nVariables, 2);
-        myRes.BC(myRes.Nf,0) = 0.0;  myRes.BC(myRes.Nf,1) = 10000000.0;
+        myRes.BC(myRes.Nf,0) = 0.0;  myRes.BC(myRes.Nf,1) = 10000000.0; // Find a better way to initialize a BC that doesn't exist (maybe something with cmath.h? nan)
         myRes.BC(myRes.Ng,0) = 0.0;  myRes.BC(myRes.Ng,1) = 1.0;
         myRes.BC(myRes.NT,0) = 0.0;  myRes.BC(myRes.NT,1) = 1.0;
-        // Initial Conditions
+        // Initial Conditions (Initial Guess, Algorithm Seeding)
         myRes.IC.resize(myRes.nVariables, 2);
         myRes.IC(myRes.Nf,0) = 0.0;  myRes.IC(myRes.Nf,1) = 5.0;
         myRes.IC(myRes.Ng,0) = 0.0;  myRes.IC(myRes.Ng,1) = 1.0;
@@ -78,13 +66,97 @@ int main ()
     // Initialization
     myMesh.initializeMesh();
     BVPsolver.initialSolution(ptrMesh, ptrRes);
+    
+    // Perform Modified Damped Newton's Method
+    BVPsolver.foundSolution = false;
+    
+    BVPsolver.performNewtonIteration(ptrMesh, ptrRes, ptrJac);
+    double temp;
+    std::cin >> temp;
+    
+    /*
+    // Perform mesh refinement
+    while (!myMesh.meshIsRefined)
+    {
+        myMesh.refineMesh();
+        BVPsolver.performNewtonIteration();
+    }
 
-    //Print mesh
+    // Save results
+    BVPsolver.saveResults();  
+    */
+
+    return 0;
+}
+
+/* Wait until there is an input file to read for these functions
+//Read input file (may skip this)
+BVPsolver.readUserInput();
+
+//Initialize variables from input file
+BVPsolver.setFlags();
+BVPsolver.setDependentVariableLimits();
+BVPsolver.setTolerance();
+BVPsolver.initialMesh();
+BVPsolver.initialSolution();
+*/
+
+// ------------Old Debugging/Print Statements-------------- //
+
+/* 
+//Print mesh
     for(int j = 0; j < (myMesh.jPoints); j++)
     {
         std::cout<<"\n j = "<<j+1<<"\t x = "<< myMesh.x(j);
     }
     std::cout << "\n";
+ */
+
+
+
+/*
+//Print mesh
+for(int j = 0; j < (myMesh.jPoints); j++)
+{
+std::cout<<"\n j = "<<j<<"\t x = "<< myMesh.x(j);
+}
+*/
+
+
+
+    // BVPsolver input from user
+    //int value;
+    //std::cin >> value;
+
+
+
+/*
+    std::cout << "\nThe first calculated residual is: \n";
+    for (int i = 0; i < myRes.nVariables; i++) 
+    {
+        for(int j = 0; j < (myMesh.jPoints); j++)
+        {
+            std::cout << myRes.res(i,j) << "\t";
+            //std::cout<<"\n j = "<<j<<"\t x = "<< myMesh.x(j);
+        }
+        std::cout << "\n";
+    }
+    */
+
+
+/* MatrixXd m(4,1);
+    m << 1,2,3,4;
+    MatrixXd something(4,1);
+    something << 3.0, 7.0, 10.0, 9.0;
+    std::cout  << m << std::endl<< std::endl;
+    MatrixXd temp;
+    for (int i = 0; i < 4; i++)
+    {
+        temp = m;
+        temp(i) += something(i);
+        std::cout  << temp - m << std::endl<< std::endl;
+    } */
+
 
     /*
     //Print BC and IC
@@ -95,7 +167,8 @@ int main ()
     std::cout << myRes.IC << std::endl;
     */
 
-    /*
+
+   /*
     //Test Resize
     MatrixXd test;
     std::cout << "test uninitialized is:" << std::endl;
@@ -128,7 +201,8 @@ int main ()
     std::cout << test << std::endl;
     */
 
-    /*
+
+       /*
     std::cout << "\n This size of the solution matrix is " << BVPsolver.currentSV.rows() << " rows and " << BVPsolver.currentSV.cols() << " columns\n";
     std::cout << "\nThe initial solution vector is: \n" << BVPsolver.currentSV << std::endl;     
     //****** Make this a function in BVP class
@@ -148,66 +222,3 @@ int main ()
     std::cout << "\nThe absolute tolerance is : " << BVPsolver.absTol << std::scientific;
     std::cout << "\nThe relative tolerance is : " << BVPsolver.relTol << std::scientific;
     */
-
-    
-    // Perform Modified Damped Newton's Method
-    BVPsolver.foundSolution = false;
-    
-    BVPsolver.performNewtonIteration(ptrMesh, ptrRes, ptrJac);
-    double temp;
-    std::cin >> temp;
-    /*
-    std::cout << "\nThe first calculated residual is: \n";
-    for (int i = 0; i < myRes.nVariables; i++) 
-    {
-        for(int j = 0; j < (myMesh.jPoints); j++)
-        {
-            std::cout << myRes.res(i,j) << "\t";
-            //std::cout<<"\n j = "<<j<<"\t x = "<< myMesh.x(j);
-        }
-        std::cout << "\n";
-    }
-    */
-
-    /*
-    // Perform mesh refinement
-    while (!myMesh.meshIsRefined)
-    {
-        myMesh.refineMesh();
-        BVPsolver.performNewtonIteration();
-    }
-
-    // Save results
-    BVPsolver.saveResults();  
-    */
-
-    return 0;
-}
-
-/* Wait until there is an input file to read for these functions
-//Read input file (may skip this)
-BVPsolver.readUserInput();
-
-//Initialize variables from input file
-BVPsolver.setFlags();
-BVPsolver.setDependentVariableLimits();
-BVPsolver.setTolerance();
-BVPsolver.initialMesh();
-BVPsolver.initialSolution();
-*/
-
-
-
-/*
-//Print mesh
-for(int j = 0; j < (myMesh.jPoints); j++)
-{
-std::cout<<"\n j = "<<j<<"\t x = "<< myMesh.x(j);
-}
-*/
-
-
-
-    // BVPsolver input from user
-    //int value;
-    //std::cin >> value;
