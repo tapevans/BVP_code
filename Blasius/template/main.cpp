@@ -5,7 +5,7 @@ solver and then post-processes the solution
 */
 
 // Include the header file
-#include "main.h"
+#include "templateMain.h"
 
 // Functions
 
