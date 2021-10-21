@@ -1,34 +1,31 @@
 /*
-Jacobian
+Jacobian Class:
+This is a class that contains all variables and functions needed to calculate the Jacobian
 */
 #ifndef JACOBIAN_H
 #define JACOBIAN_H
 
-//#include "BoundaryValueProblem.h"
 #include "Residual.h"
 #include "Mesh.h"
-
-using namespace std;
-#include <vector>
 
 class Jacobian
 {
 public:
     // Constructor
-        Jacobian();
+        Jacobian();                                     // Sets default parameters when an instance of class Jacobian is created
+    
     // Functions
-    void calculateJacobian(std::vector<double>, Mesh*, Residual*);
-        void calculatePerturbation(std::vector<double> SV);
-
+        void calculateJacobian(MatrixXd, Mesh*, Residual*); // Parent function that calls all necessary functions to calculate the Jacobian
+            void calculatePerturbation(MatrixXd);           // Function that determines that perturbed value for each SV
 
     // Variables
-    std::vector<std::vector<double> > jacM;
-    std::vector<std::vector<double> > perV;
+        MatrixXd jac;                                       // Jacobian matrix
+        MatrixXd per;                                       // Perturbation values vector
 
-    int totSV;
+        int totSV;                                          // Total number of dependent variables (--------- may move this to the residual function)
 
-    double absPer; // Absolute pertebation value for the jacobian
-    double relPer; // Relative pertebation value for the jacobian
+        double absPer;                                      // Absolute pertubation value for the jacobian
+        double relPer;                                      // Relative pertubation value for the jacobian
 };
 
 #endif //JACOBIAN_H

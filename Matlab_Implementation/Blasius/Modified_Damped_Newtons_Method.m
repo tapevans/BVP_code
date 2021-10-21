@@ -57,8 +57,8 @@ while ~mesh_is_refined
         F_current = BVP_residual(SV_current, MESH, SIM, BC, TOL);
         
         % Calculate correction vector
-        del_SV_current = Jac\(F_current);
-%         del_SV_current = Jac\(-F_current);
+%         del_SV_current = Jac\(F_current);
+        del_SV_current = Jac\(-F_current);
         
         
         %% Solve for the next iteration
@@ -70,7 +70,8 @@ while ~mesh_is_refined
         found_SV_next = false;
         while ~found_SV_next
             %% Calculate SV^m+1
-            SV_temp = SV_current - lambda * del_SV_current;
+%             SV_temp = SV_current - lambda * del_SV_current;
+            SV_temp = SV_current + lambda * del_SV_current;
             
             %% Check if lambda meets tol
             %%%%%%%%%%%% 1) Not checking if in soln space right now
@@ -78,8 +79,8 @@ while ~mesh_is_refined
             %  2) Check Look ahead criteria
             %  - Calculate deltaSV^m+1
             F_temp = BVP_residual(SV_temp, MESH, SIM, BC, TOL);
-            del_SV_temp = Jac\(F_temp);
-%             del_SV_temp = Jac\(-F_temp);
+%             del_SV_temp = Jac\(F_temp);
+            del_SV_temp = Jac\(-F_temp);
             
             norm_is_smaller = ( norm(del_SV_temp) < norm(del_SV_current) );
             if norm_is_smaller
