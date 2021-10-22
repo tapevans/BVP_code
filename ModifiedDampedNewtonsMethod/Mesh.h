@@ -6,6 +6,7 @@ This is a class that contains all variables and functions needed to calculate th
 #ifndef MESH_H
 #define MESH_H
 
+#include <iostream>
 #include <Eigen/Eigen>
 
 using namespace std;

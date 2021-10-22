@@ -11,6 +11,9 @@ This class will be used to solve boundary value problems using the Modified Damp
 #include "Residual.h"
 #include "Jacobian.h"
 
+#include <iostream>
+#include <fstream>
+
 
 class BoundaryValueProblem
 {
@@ -25,12 +28,12 @@ public:
             void setFlags();                                                        // (Placeholder) for future
             void setDependentVariableLimits();                                      // (Placeholder) for future
             void setTolerance();                                                    // (Placeholder) for future
-        void performNewtonIteration(Mesh*, Residual*, Jacobian*);                   // Function that performs the MDNM algorithm. Calls other functions when needed
-            void calcCorrectionVector(Mesh*, Residual*, Jacobian*);                 // Calculates the correction vector using the currentSV
-            void calcNextSV(Mesh*, Residual*, Jacobian*);                           // Calculates what the next SV is from the correction vector
+        void performNewtonIteration(Mesh*, Residual*, Jacobian*); // Function that performs the MDNM algorithm. Calls other functions when needed
+            void calcCorrectionVector(Mesh*, Residual*, Jacobian*); // Calculates the correction vector using the currentSV
+            void calcNextSV(Mesh*, Residual*, Jacobian*);    // Calculates what the next SV is from the correction vector
                 void checkSVTrustRegion(MatrixXd tempSV);                           // Function that determines if all dependednt variables of the calculated SV are within the trust region
                 void checkLookAhead(MatrixXd tempSV, Mesh*, Residual*, Jacobian*);  // Function that determines if the next correction vector produced from the next SV is leading the algorithm in the proper direction
-            void checkSolutionTolerance();                                          // After calcNextSV accepts the new SV, this function determines if the solution is within the overall tolerance for the problem
+            void checkSolutionTolerance(Jacobian* );                                // After calcNextSV accepts the new SV, this function determines if the solution is within the overall tolerance for the problem
         void saveResults();                                                         // (Placeholder) Function that saves all the desired results into a file (.txt/.csv?)
         // Error handling function????
 
@@ -55,6 +58,10 @@ public:
         double absTol;                                                              // Absolute tolerance for the solution
         double relTol;                                                              // Relative tolerance for the solution
         double currentNorm, tempNorm, nextNorm;                                     // Current, temporary, and next norm of the correction vector
+
+        int numIterations;
+
+        BoundaryValueProblem *BVPpointer;
 };
 
 #endif

@@ -85,15 +85,16 @@ void BoundaryValueProblem::setTolerance() // PLACEHOLDER
 void BoundaryValueProblem::performNewtonIteration(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 {
     std::cout<<"\nPerforming Modified Damped Newtons Method to find the solution\n";
-    
+    numIterations = 0;
     // Start the algorithm
     while (!foundSolution)
     {
+        numIterations++;
         foundNextSV = false;
         lambda = 1.0; 
         calcCorrectionVector(ptrMesh, ptrRes, ptrJac);
         calcNextSV(ptrMesh, ptrRes, ptrJac);
-        checkSolutionTolerance(); //This will determine if another MDNM needs to be performed 
+        checkSolutionTolerance(ptrJac); //This will determine if another MDNM needs to be performed 
         
     }    
 }
@@ -104,11 +105,24 @@ void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes,
     //std::cout<<"\tCalculating correction vector\n";
  
     // Calculate Residual
-    //MatrixXd residual; ////------------------ Everytime this algorithm runs, will it create a new residual vector or will it replace the memory location of the first one?
     ptrRes->currentRes = (ptrRes->calculateResidual(currentSV, ptrMesh));
     
     // Calculate Jacobian
-    ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes); ////------------------ This also calls residual many times...only one of them is used more than once. Could make a temporary residual variable in Jacobian?
+    if (numIterations == 1)
+    {
+        ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes, BVPpointer); 
+    }
+    
+    if (ptrJac->jacobianCounter < 20)
+    {
+        //keep old Jacobian
+    }
+    else
+    {
+        ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes, BVPpointer); 
+    }
+    
+    
 
     // Solve for correction vector ---  CV = inv(Jac(SV))*(-Res(SV))  ---
     currentCorrectionVector = (ptrJac->jac.inverse()) * (-1 * (ptrRes->currentRes)); 
@@ -116,6 +130,18 @@ void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes,
     
     // Calculate the norm of the correction vector (This is used later)
     currentNorm = currentCorrectionVector.norm();
+
+                ofstream debugFilestream;
+                debugFilestream.open("debugLog.txt", ios::out | ios::app); 
+                debugFilestream << "numIterations = " << numIterations << "\n";
+                debugFilestream << "jacobianCounter = " << ptrJac->jacobianCounter << "\n";
+                debugFilestream << "Residual is :\n";
+                debugFilestream << ptrRes->currentRes << "\n";
+                debugFilestream << "Jacobian is :\n";
+                debugFilestream << ptrJac->jac << "\n";
+                debugFilestream << "Correction Vector is :\n";
+                debugFilestream << currentCorrectionVector << "\n";
+                debugFilestream.close();
 }
 
 void BoundaryValueProblem::calcNextSV(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
@@ -126,10 +152,10 @@ void BoundaryValueProblem::calcNextSV(Mesh* ptrMesh, Residual* ptrRes, Jacobian*
     while (!foundNextSV)
     {
         // Calculate a temporary SV
-        std::cout << "Inside calcNextSV. currentSV is:" << currentSV << std::endl;
+        //std::cout << "Inside calcNextSV. currentSV is:" << currentSV << std::endl;
         tempSV = currentSV + lambda * currentCorrectionVector;
 
-        std::cout << "Inside calcNextSV. tempSV is:" << tempSV << std::endl;
+        //std::cout << "Inside calcNextSV. tempSV is:" << tempSV << std::endl;
         // Check if this SV is within the trust region
         checkSVTrustRegion(tempSV); //// --------- This currently does nothing
 
@@ -141,11 +167,18 @@ void BoundaryValueProblem::calcNextSV(Mesh* ptrMesh, Residual* ptrRes, Jacobian*
         {
             foundNextSV = true; // Stops the while loop in this function
             nextSV = tempSV;
+            nextNorm = tempNorm; 
             ////--------- Set the next correction vector from what was calculated inside check Look Ahead so maybe just do this there?
         }
         else
         {
             lambda = lambda * 0.5;
+            if (lambda < 1e-10)
+            {
+                ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes, BVPpointer);
+                lambda = 0.5;
+            }
+            
         }
         std::cout<< "lambda is: " << lambda << std::endl;
     }
@@ -163,7 +196,7 @@ void BoundaryValueProblem::checkLookAhead(MatrixXd tempSV, Mesh* ptrMesh, Residu
     
     // Calculate the next correction vector from the next SV
     ptrRes->tempRes = (ptrRes->calculateResidual(tempSV, ptrMesh));
-    nextCorrectionVector = (ptrJac->jac.inverse()) * ptrRes->tempRes;
+    nextCorrectionVector = (ptrJac->jac.inverse()) * (-1*ptrRes->tempRes);
     
     //Calculate the norm of the current and next correction vectors
     tempNorm = nextCorrectionVector.norm();
@@ -174,7 +207,7 @@ void BoundaryValueProblem::checkLookAhead(MatrixXd tempSV, Mesh* ptrMesh, Residu
     if (tempNorm < currentNorm)
     {
         normIsSmaller = true;
-        nextNorm = tempNorm; //---------Maybe?
+        
     }
     else
     {
@@ -182,7 +215,7 @@ void BoundaryValueProblem::checkLookAhead(MatrixXd tempSV, Mesh* ptrMesh, Residu
     }
 }
 
-void BoundaryValueProblem::checkSolutionTolerance()
+void BoundaryValueProblem::checkSolutionTolerance(Jacobian* ptrJac)
 {
     std::cout<<"\tChecking if the latest solution is within tolerance\n";
     ////-------- norm(next(or current) correction vector) < max of (  Abs_tol or Rel_tol*SV_next (or curent?)  )
@@ -192,10 +225,11 @@ void BoundaryValueProblem::checkSolutionTolerance()
     if (nextNorm < maxTol)
     {
         foundSolution = true;
+        std::cout << "\nSolution was found!" << std::endl;
     }
     else
     {
-        // Increase the number on Jacobian count
+        ptrJac->jacobianCounter++;
     }
     currentSV = nextSV;
 }

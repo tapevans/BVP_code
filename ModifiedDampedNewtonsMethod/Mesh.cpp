@@ -28,22 +28,21 @@ void Mesh::initializeMesh()
 void Mesh::calculateSurfaceLocation()
 {
     // 
-    for(int j = 0; j< jPoints; j++)
+    for(int j = 0; j< jPoints+1; j++)
     {
-        if (j = 0)
+        if (j == 0)
         {
             xNegative(j) =  x(j);
         }
-        else if(j = jPoints)
+        else if(j == jPoints)
         {
             xPositive(j-1) = x(j-1);
         }
         else
         {
-            xNegative(j)   =  (x(j) - x(j-1))*0.5;
-            xPositive(j-1) =  (x(j) - x(j-1))*0.5;
+            xNegative(j)   =  (x(j) + x(j-1))*0.5;
+            xPositive(j-1) =  (x(j) + x(j-1))*0.5;
         }       
-        
     }
 }
 

@@ -13,10 +13,11 @@ Jacobian::Jacobian()
 }
 
 
-void Jacobian::calculateJacobian(MatrixXd SV, Mesh* ptrMesh, Residual* ptrRes)
+void Jacobian::calculateJacobian(MatrixXd SV, Mesh* ptrMesh, Residual* ptrRes, BoundaryValueProblem* ptrBVP)
 {
     std::cout<<"Calculating the Jacobian\n";
     
+    jacobianCounter = 0;
     // Initialize Jacobian to a size nVar*jPoints
     //jac.resize(ptrRes->totSV,ptrRes->totSV);
 
@@ -25,17 +26,28 @@ void Jacobian::calculateJacobian(MatrixXd SV, Mesh* ptrMesh, Residual* ptrRes)
 
     // Calculate perturbation value of each SV
     calculatePerturbation(SV, ptrRes);
-    
+                ofstream debugFilestream;
+                debugFilestream.open("debugLog.txt", ios::out | ios::app); 
+                debugFilestream << "Perturbation Vector = \n" << per << "\n";
+                debugFilestream.close();
     // Iterate through all states to calculate the jacobian
     
     //std::cout << "Initial Res:\n" << residualInitial << std::endl;
     for (int i = 0; i < (ptrRes->totSV); i++)
     {
-        tempSV     = ptrRes->currentRes;
+        tempSV     = ptrBVP->currentSV;
         tempSV(i) += per(i);
         ptrRes->tempRes = ptrRes->calculateResidual(tempSV, ptrMesh);
         //std::cout << "tempRes is :\n" << ptrRes->tempRes << std::endl;
         jac.col(i) = ((ptrRes->tempRes) - (ptrRes->currentRes))/per(i);
+
+        debugFilestream.open("debugLog.txt", ios::out | ios::app); 
+        debugFilestream << "ith colm = " << i+1 << "\n";
+        //debugFilestream << "currentRes = \n" << tempSV << "\n";
+        debugFilestream << "tempSV(i) = \n" << tempSV << "\n";
+        debugFilestream << "Res(SV_i) = \n" << ptrRes->tempRes << "\n";
+        debugFilestream << "Jac(:,i) = \n" << jac.col(i) << "\n";
+        debugFilestream.close();
     }
     //std::cout << "Jacobian is:\n" << jac << std::endl;
 }

@@ -7,6 +7,11 @@ This is a class that contains all variables and functions needed to calculate th
 
 #include "Residual.h"
 #include "Mesh.h"
+#include "BoundaryValueProblem.h"
+
+#include <iostream>
+#include <fstream>
+#include <Eigen/Eigen>
 
 class Jacobian
 {
@@ -15,7 +20,7 @@ public:
         Jacobian();                                         // Sets default parameters when an instance of class Jacobian is created
     
     // Functions
-        void calculateJacobian(MatrixXd, Mesh*, Residual*); // Parent function that calls all necessary functions to calculate the Jacobian
+        void calculateJacobian(MatrixXd, Mesh*, Residual*, BoundaryValueProblem*); // Parent function that calls all necessary functions to calculate the Jacobian
             void calculatePerturbation(MatrixXd, Residual*);// Function that determines that perturbed value for each SV
 
     // Variables
