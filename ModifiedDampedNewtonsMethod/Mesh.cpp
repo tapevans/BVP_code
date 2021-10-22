@@ -11,9 +11,9 @@ Mesh::Mesh()
 void Mesh::initializeMesh()
 {
     // Initialize the size of node/face location matricies
-    x.resize(1, jPoints);
-    xNegative.resize(1, jPoints);
-    xPositive.resize(1, jPoints);
+    //x.resize(1, jPoints);
+    //xNegative.resize(1, jPoints);
+    //xPositive.resize(1, jPoints);
 
     // Define node location (Outer nodes are located at the boundary)
     for(int j = 0; j< jPoints; j++)

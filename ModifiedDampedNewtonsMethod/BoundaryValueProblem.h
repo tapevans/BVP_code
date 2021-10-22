@@ -20,6 +20,7 @@ public:
 
     // Functions
         void readUserInput();                                                       // (Placeholder) Reads the users input from a text file 
+        void initializeMatrixSize(Mesh*, Residual*, Jacobian*);                     // Sets the size of all matrix used throughout the solver
         void initialSolution(Mesh*, Residual*);                                     // Using the initial guess values found in the residual class, this function defines the SV at each mesh location using linear distribution scheme
             void setFlags();                                                        // (Placeholder) for future
             void setDependentVariableLimits();                                      // (Placeholder) for future

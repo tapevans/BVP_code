@@ -12,20 +12,21 @@ class Jacobian
 {
 public:
     // Constructor
-        Jacobian();                                     // Sets default parameters when an instance of class Jacobian is created
+        Jacobian();                                         // Sets default parameters when an instance of class Jacobian is created
     
     // Functions
         void calculateJacobian(MatrixXd, Mesh*, Residual*); // Parent function that calls all necessary functions to calculate the Jacobian
-            void calculatePerturbation(MatrixXd);           // Function that determines that perturbed value for each SV
+            void calculatePerturbation(MatrixXd, Residual*);// Function that determines that perturbed value for each SV
 
     // Variables
         MatrixXd jac;                                       // Jacobian matrix
         MatrixXd per;                                       // Perturbation values vector
-
-        int totSV;                                          // Total number of dependent variables (--------- may move this to the residual function)
+        MatrixXd tempSV;
 
         double absPer;                                      // Absolute pertubation value for the jacobian
         double relPer;                                      // Relative pertubation value for the jacobian
+
+        int jacobianCounter; // Keeps track of how many Newton iterations the Jacobian has been used for
 };
 
 #endif //JACOBIAN_H

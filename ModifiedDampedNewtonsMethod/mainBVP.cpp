@@ -42,6 +42,8 @@ int main ()
     Jacobian *ptrJac;
     ptrJac = &myJacobian;
     
+    
+
     // Defining user inputs here (Eventually this should be a function that reads a text file)
         // Mesh
         myMesh.L = 6;
@@ -49,13 +51,16 @@ int main ()
         myMesh.meshIsRefined = true; //setting to TRUE will skip mesh refinement
         // Residual
         myRes.nVariables = 3;
+
+        BVPsolver.initializeMatrixSize(ptrMesh , ptrRes , ptrJac);
+
         // Boundary Conditions
-        myRes.BC.resize(myRes.nVariables, 2);
+        //myRes.BC.resize(myRes.nVariables, 2);
         myRes.BC(myRes.Nf,0) = 0.0;  myRes.BC(myRes.Nf,1) = 10000000.0; // Find a better way to initialize a BC that doesn't exist (maybe something with cmath.h? nan)
         myRes.BC(myRes.Ng,0) = 0.0;  myRes.BC(myRes.Ng,1) = 1.0;
         myRes.BC(myRes.NT,0) = 0.0;  myRes.BC(myRes.NT,1) = 1.0;
         // Initial Conditions (Initial Guess, Algorithm Seeding)
-        myRes.IC.resize(myRes.nVariables, 2);
+        //myRes.IC.resize(myRes.nVariables, 2);
         myRes.IC(myRes.Nf,0) = 0.0;  myRes.IC(myRes.Nf,1) = 5.0;
         myRes.IC(myRes.Ng,0) = 0.0;  myRes.IC(myRes.Ng,1) = 1.0;
         myRes.IC(myRes.NT,0) = 0.0;  myRes.IC(myRes.NT,1) = 1.0;
@@ -71,8 +76,10 @@ int main ()
     BVPsolver.foundSolution = false;
     
     BVPsolver.performNewtonIteration(ptrMesh, ptrRes, ptrJac);
+    
+    
     double temp;
-    std::cin >> temp;
+    std::cin >> temp; ////--- This can be removed. This is here so if I run the .exe outside of Visual Studios, it won't close after it's finished
     
     /*
     // Perform mesh refinement
@@ -103,8 +110,8 @@ BVPsolver.initialSolution();
 
 // ------------Old Debugging/Print Statements-------------- //
 
-/* 
-//Print mesh
+/*     
+    //Print mesh
     for(int j = 0; j < (myMesh.jPoints); j++)
     {
         std::cout<<"\n j = "<<j+1<<"\t x = "<< myMesh.x(j);
