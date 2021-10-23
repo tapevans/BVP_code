@@ -7,13 +7,20 @@ figure
 hold on
 plot(MESH.x_vec,SV(SIM.Nf,:),'LineWidth',2,'DisplayName','f')
 plot(MESH.x_vec,SV(SIM.Ng,:),'LineWidth',2,'DisplayName','g')
-% plot(MESH.x_vec,SV(SIM.NT,:),'LineWidth',2,'DisplayName','T')
+plot(MESH.x_vec,SV(SIM.NT,:),'LineWidth',2,'DisplayName','T')
 lgn = legend;
 xlabel('\eta')
 ylabel('f,g')
 xlim([0,MESH.L])
 ylim([0,4.5])
 %% Plot iteration results
+
+
+figure
+hold on
+plot(MESH.x_vec,CppSolution(SIM.Nf,:),'LineWidth',2,'DisplayName','f')
+plot(MESH.x_vec,CppSolution(SIM.Ng,:),'LineWidth',2,'DisplayName','g')
+plot(MESH.x_vec,CppSolution(SIM.NT,:),'LineWidth',2,'DisplayName','T')
 
 
 end

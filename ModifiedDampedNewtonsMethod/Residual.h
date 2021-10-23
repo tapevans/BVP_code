@@ -18,6 +18,7 @@ public:
         Residual();                                     // Defines the pointers and number of dependent variables in the system when an instance of class Residual is created
 
     // Functions
+        void totalSVCalc(Mesh*);
         MatrixXd calculateResidual(MatrixXd , Mesh*);   // Residual Function
 
     // Variables
@@ -26,7 +27,9 @@ public:
 
         Matrix<double, Dynamic, 2> BC;                  // Boundary conditions for each dependent variable
         Matrix<double, Dynamic, 2> IC;                  // Initial guess/seeding for the algorithm
-        MatrixXd res;                                   // Residual vectors  ////-------------- if the calculate residual function is returning a matrix, does this res need to be stored for later access? does it take up more memory?
+        MatrixXd currentRes, tempRes;                   // Residual vectors
+
+        int totSV;                                      // Total number of dependent variables (--------- may move this to the residual function)
 
         // Properties
         double Pr; //Prandtl number //Don't know if this should remain here***** 

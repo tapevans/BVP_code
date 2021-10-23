@@ -4,6 +4,7 @@
 #include "Jacobian.h"
 
 #include <iostream>
+#include <fstream>
 #include <Eigen/Eigen>
 
 // How I added the toolsFolder to my working folder (THIS MAY NOT HAVE WORKED)
@@ -25,6 +26,26 @@
 // Main code to solve BVP
 int main ()
 {   
+    ofstream debugFilestream;
+    debugFilestream.open("debugLog.txt", ios::out | ios::trunc);
+    debugFilestream << "Hello World\n";
+    debugFilestream.close();
+
+    // Outputting to a file notes (https://www.cplusplus.com/doc/tutorial/files/)
+        // debugFilestream is an object of the class stream
+        // .open() is a member function of the class stream
+        // "debugLog.txt" is the filename
+        // .open(filename, mode)
+        // All the modes
+            // ios::in	    Open for input operations.
+            // ios::out	    Open for output operations.
+            // ios::binary	Open in binary mode.
+            // ios::ate	    Set the initial position at the end of the file. If this flag is not set, the initial position is the beginning of the file.
+            // ios::app	    All output operations are performed at the end of the file, appending the content to the current content of the file.
+            // ios::trunc	If the file is opened for output operations and it already existed, its previous content is deleted and replaced by the new one.
+        // bitwise operator OR (|) is used to combine multiple modes
+
+
     // Create an instance of each of the needed classes: Mesh, Residual, BoundaryValueProblem, Jacobian
     Mesh myMesh;
     Mesh *ptrMesh; // Pointer of type Mesh class
@@ -38,10 +59,15 @@ int main ()
     BoundaryValueProblem *ptrBVP;
     ptrBVP = &BVPsolver;
 
+    std::cout<< BVPsolver.BVPpointer<<std::endl;
+    std::cout<< ptrBVP<<std::endl;
+
     Jacobian myJacobian;
     Jacobian *ptrJac;
     ptrJac = &myJacobian;
     
+    
+
     // Defining user inputs here (Eventually this should be a function that reads a text file)
         // Mesh
         myMesh.L = 6;
@@ -49,30 +75,55 @@ int main ()
         myMesh.meshIsRefined = true; //setting to TRUE will skip mesh refinement
         // Residual
         myRes.nVariables = 3;
+
+        // After jPoints and nVariables are defined, all matrices can be initialized to a know size
+        BVPsolver.initializeMatrixSize(ptrMesh , ptrRes , ptrJac);
+
         // Boundary Conditions
-        myRes.BC.resize(myRes.nVariables, 2);
+        //myRes.BC.resize(myRes.nVariables, 2);
         myRes.BC(myRes.Nf,0) = 0.0;  myRes.BC(myRes.Nf,1) = 10000000.0; // Find a better way to initialize a BC that doesn't exist (maybe something with cmath.h? nan)
         myRes.BC(myRes.Ng,0) = 0.0;  myRes.BC(myRes.Ng,1) = 1.0;
         myRes.BC(myRes.NT,0) = 0.0;  myRes.BC(myRes.NT,1) = 1.0;
         // Initial Conditions (Initial Guess, Algorithm Seeding)
-        myRes.IC.resize(myRes.nVariables, 2);
+        //myRes.IC.resize(myRes.nVariables, 2);
         myRes.IC(myRes.Nf,0) = 0.0;  myRes.IC(myRes.Nf,1) = 5.0;
         myRes.IC(myRes.Ng,0) = 0.0;  myRes.IC(myRes.Ng,1) = 1.0;
         myRes.IC(myRes.NT,0) = 0.0;  myRes.IC(myRes.NT,1) = 1.0;
         // Tolerance
         BVPsolver.absTol = 1e-6;
         BVPsolver.relTol = 1e-3;
+        // Properties
+        myRes.Pr = 0.71;
     
     // Initialization
     myMesh.initializeMesh();
     BVPsolver.initialSolution(ptrMesh, ptrRes);
+    //double temp;
+    //std::cin >> temp; ////--- This can be removed. This is here so if I run the .exe outside of Visual Studios, it won't close after it's finished
+
+                // Print the mesh and initial solution to the debug file
+                debugFilestream.open("debugLog.txt", ios::out | ios::app); 
+                debugFilestream << "The initial mesh is:\n";
+                debugFilestream << myMesh.x << "\n";
+                debugFilestream << "The negative interface locations are:\n";
+                debugFilestream << myMesh.xNegative << "\n";
+                debugFilestream << "The positive interface locations are:\n";
+                debugFilestream << myMesh.xPositive << "\n";
+                debugFilestream << "The seeding values (IC) for the algorithm are:\n";
+                MatrixXd tempMat;
+                //auto tempMat = new Matrix<double, Dynamic, Dynamic>;
+                tempMat = BVPsolver.currentSV;
+                tempMat.resize(myRes.nVariables,myMesh.jPoints);
+                debugFilestream << tempMat << "\n";
+                //tempMat.clear();  ////--------Trying to delete this object to clear up memory
+                debugFilestream.close();
+
     
     // Perform Modified Damped Newton's Method
     BVPsolver.foundSolution = false;
-    
     BVPsolver.performNewtonIteration(ptrMesh, ptrRes, ptrJac);
-    double temp;
-    std::cin >> temp;
+    
+    
     
     /*
     // Perform mesh refinement
@@ -89,6 +140,16 @@ int main ()
     return 0;
 }
 
+
+/*
+    debugFilename = ;
+    std::string debugFilenameString = "debugLog.txt";
+    char * debugFilename = new char [debugFilenameString.length()+1];
+    std::strcpy(debugFilename, debugFilenameString.c_str())
+    debugFilestream.open(debugFilename, ios::out | ios::app);
+    debugFilestream.open(debugFilename, ios::out | ios::trunc);
+*/
+
 /* Wait until there is an input file to read for these functions
 //Read input file (may skip this)
 BVPsolver.readUserInput();
@@ -103,8 +164,8 @@ BVPsolver.initialSolution();
 
 // ------------Old Debugging/Print Statements-------------- //
 
-/* 
-//Print mesh
+/*     
+    //Print mesh
     for(int j = 0; j < (myMesh.jPoints); j++)
     {
         std::cout<<"\n j = "<<j+1<<"\t x = "<< myMesh.x(j);

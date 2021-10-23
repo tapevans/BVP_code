@@ -3,14 +3,14 @@
 
 function [MESH, SIM, TOL, BC, FLAG] = get_Input()
 %% Domain Parameters
-MESH.jPoints = 20; % Number of control volumes
+MESH.jPoints = 10; % Number of control volumes
 MESH.L       = 6; % Length of domain in x-dir %%%% For the blasius, the algorithm will solve if the length is 7 or less
 %% Dependent Offsets
 SIM.Nf = 1;
 SIM.Ng = 2;
-% SIM.NT = 3;
-% SIM.nDepVariables = 3;
-SIM.nDepVariables = 2;
+SIM.NT = 3;
+SIM.nDepVariables = 3;
+% SIM.nDepVariables = 2;
 
 SIM.Nplate = 1;
 SIM.Nfreestream = 2;
@@ -19,16 +19,16 @@ nBoundaries = 2;
 BC = zeros(SIM.nDepVariables , nBoundaries);
 BC(SIM.Nf,SIM.Nplate) = 0;
 BC(SIM.Ng,SIM.Nplate) = 0;
-% BC(SIM.NT,SIM.Nplate) = 0;
+BC(SIM.NT,SIM.Nplate) = 0;
 BC(SIM.Nf,SIM.Nfreestream) = NaN;
 BC(SIM.Ng,SIM.Nfreestream) = 1;
-% BC(SIM.NT,SIM.Nfreestream) = 1;
+BC(SIM.NT,SIM.Nfreestream) = 1;
 
 %% Properties
 % SIM.k = 20;
 % SIM.q_gen = 100000;
 % SIM.q_gen = 0;
-% SIM.Pr = 0.71;
+SIM.Pr = 0.71;
 
 %% Tolerance Parameters
 TOL.A = 1e-6; % Absolute tolerance for MDNM
@@ -44,9 +44,9 @@ SIM.Res_name = 'BVP_residual'; % File name associated with the residual function
 %% Initial Guess
 f_guess = linspace(0,5,MESH.jPoints);
 g_guess = linspace(0,1,MESH.jPoints);
-% T_guess = linspace(0,1,MESH.jPoints);
-% SIM.SV_0 = [f_guess;g_guess;T_guess];
-SIM.SV_0 = [f_guess;g_guess];
+T_guess = linspace(0,1,MESH.jPoints);
+SIM.SV_0 = [f_guess;g_guess;T_guess];
+% SIM.SV_0 = [f_guess;g_guess];
 SIM.SV_0 = reshape(SIM.SV_0,[],1);
 
 
