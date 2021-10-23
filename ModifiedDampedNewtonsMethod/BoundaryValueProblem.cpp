@@ -110,7 +110,7 @@ void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes,
     // Calculate Jacobian
     if (numIterations == 1)
     {
-        ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes, BVPpointer); 
+        ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes); 
     }
     
     if (ptrJac->jacobianCounter < 20)
@@ -119,7 +119,7 @@ void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes,
     }
     else
     {
-        ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes, BVPpointer); 
+        ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes); 
     }
     
     
@@ -175,7 +175,7 @@ void BoundaryValueProblem::calcNextSV(Mesh* ptrMesh, Residual* ptrRes, Jacobian*
             lambda = lambda * 0.5;
             if (lambda < 1e-10)
             {
-                ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes, BVPpointer);
+                ptrJac->calculateJacobian(currentSV, ptrMesh, ptrRes);
                 lambda = 0.5;
             }
             
@@ -225,13 +225,23 @@ void BoundaryValueProblem::checkSolutionTolerance(Jacobian* ptrJac)
     if (nextNorm < maxTol)
     {
         foundSolution = true;
+        currentSV = nextSV;
         std::cout << "\nSolution was found!" << std::endl;
+                ofstream debugFilestream;
+                debugFilestream.open("debugLog.txt", ios::out | ios::app); 
+                debugFilestream << "The solution is :\n";
+                MatrixXd tempVar;
+                tempVar = currentSV;
+                tempVar.resize(3,10);
+                debugFilestream << tempVar << "\n";
+                debugFilestream.close();
     }
     else
     {
         ptrJac->jacobianCounter++;
+        currentSV = nextSV;
     }
-    currentSV = nextSV;
+    
 }
 
 void BoundaryValueProblem::saveResults()   // PLACEHOLDER

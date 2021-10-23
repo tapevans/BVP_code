@@ -124,8 +124,6 @@ int main ()
     BVPsolver.performNewtonIteration(ptrMesh, ptrRes, ptrJac);
     
     
-    double temp;
-    std::cin >> temp; ////--- This can be removed. This is here so if I run the .exe outside of Visual Studios, it won't close after it's finished
     
     /*
     // Perform mesh refinement

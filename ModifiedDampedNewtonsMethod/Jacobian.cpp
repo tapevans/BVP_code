@@ -13,7 +13,7 @@ Jacobian::Jacobian()
 }
 
 
-void Jacobian::calculateJacobian(MatrixXd SV, Mesh* ptrMesh, Residual* ptrRes, BoundaryValueProblem* ptrBVP)
+void Jacobian::calculateJacobian(MatrixXd SV, Mesh* ptrMesh, Residual* ptrRes)
 {
     std::cout<<"Calculating the Jacobian\n";
     
@@ -35,7 +35,7 @@ void Jacobian::calculateJacobian(MatrixXd SV, Mesh* ptrMesh, Residual* ptrRes, B
     //std::cout << "Initial Res:\n" << residualInitial << std::endl;
     for (int i = 0; i < (ptrRes->totSV); i++)
     {
-        tempSV     = ptrBVP->currentSV;
+        tempSV     = SV;
         tempSV(i) += per(i);
         ptrRes->tempRes = ptrRes->calculateResidual(tempSV, ptrMesh);
         //std::cout << "tempRes is :\n" << ptrRes->tempRes << std::endl;
