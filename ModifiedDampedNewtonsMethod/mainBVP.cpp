@@ -22,6 +22,46 @@
 
 //Used .\BVP.exe to actually run the executable in the terminal window
 
+std::string componentName(int ind) 
+{
+    if(ind == 0)
+    {
+        return "nf";
+    }
+    else if (ind == 1)
+    {
+        return "ng";
+    } else if(ind == 2)
+    {
+        return "nT";
+    }
+}
+void writeSolution(int nPoints, int nVars, RowVectorXd grid, MatrixXd currentSV) 
+{
+    std::string filename;
+    filename = "bvpSolution.csv";
+    std::ofstream f(filename);    
+    currentSV.resize(nVars,nPoints); 
+    f << "x" << ",";
+    for (int n = 0; n < nVars; n++)
+    {   
+        f << componentName(n);
+        f << ", ";
+    }
+    f << std::endl;
+    for (int j = 0; j < nPoints; j++)
+    {
+        f << grid(j) <<",";
+        for (int n = 0; n < nVars; n++)
+        {
+            f << currentSV(n,j);
+            if (n != nVars - 1) {
+                f << ", ";
+            }
+        }
+        f << std::endl;
+    }
+}
 
 // Main code to solve BVP
 int main ()
@@ -136,6 +176,8 @@ int main ()
     // Save results
     BVPsolver.saveResults();  
     */
+    // Write solution to bvpSolution.csv file
+    writeSolution(myMesh.jPoints, myRes.nVariables, myMesh.x, BVPsolver.currentSV);
 
     return 0;
 }

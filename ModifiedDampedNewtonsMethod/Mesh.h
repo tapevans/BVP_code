@@ -7,7 +7,7 @@ This is a class that contains all variables and functions needed to calculate th
 #define MESH_H
 
 #include <iostream>
-#include <Eigen/Eigen>
+#include "toolsFolder\\eigen-3.4.0\\Eigen\\Eigen"
 
 using namespace std;
 using namespace Eigen;
