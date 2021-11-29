@@ -19,7 +19,6 @@ public:
         Jacobian();                                         // Sets default parameters when an instance of class Jacobian is created
     
     // Functions
-        //void calculateJacobian(MatrixXd, Mesh*, Residual*, BoundaryValueProblem*); // Parent function that calls all necessary functions to calculate the Jacobian
         void calculateJacobian(MatrixXd, Mesh*, Residual*); // Parent function that calls all necessary functions to calculate the Jacobian
             void calculatePerturbation(MatrixXd, Residual*);// Function that determines that perturbed value for each SV
 

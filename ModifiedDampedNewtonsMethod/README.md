@@ -21,3 +21,14 @@ A boundary value solver using Modified Damped Newton's Method for stiff numerica
 - Eigen
     - To run this solver, the library Eigen must be installed and its path included in the compiler. 
     - [Download Eigen Here](http://eigen.tuxfamily.org/index.php?title=Main_Page#Download)
+
+## Current Projects
+- Update Jacobian calcuation to take advantage of banded structure
+- Implement mesh refinement
+- Implement an input file
+- Implement Cantera connection
+- Implement trust region checking
+
+## Future Development
+- Update Jacobian to handle multi-zone banded structure
+- Example Problems

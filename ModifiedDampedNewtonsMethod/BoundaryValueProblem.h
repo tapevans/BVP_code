@@ -28,9 +28,9 @@ public:
             void setFlags();                                                        // (Placeholder) for future
             void setDependentVariableLimits();                                      // (Placeholder) for future
             void setTolerance();                                                    // (Placeholder) for future
-        void performNewtonIteration(Mesh*, Residual*, Jacobian*); // Function that performs the MDNM algorithm. Calls other functions when needed
-            void calcCorrectionVector(Mesh*, Residual*, Jacobian*); // Calculates the correction vector using the currentSV
-            void calcNextSV(Mesh*, Residual*, Jacobian*);    // Calculates what the next SV is from the correction vector
+        void performNewtonIteration(Mesh*, Residual*, Jacobian*);                   // Function that performs the MDNM algorithm. Calls other functions when needed
+            void calcCorrectionVector(Mesh*, Residual*, Jacobian*);                 // Calculates the correction vector using the currentSV
+            void calcNextSV(Mesh*, Residual*, Jacobian*);                           // Calculates what the next SV is from the correction vector
                 void checkSVTrustRegion(MatrixXd tempSV);                           // Function that determines if all dependednt variables of the calculated SV are within the trust region
                 void checkLookAhead(MatrixXd tempSV, Mesh*, Residual*, Jacobian*);  // Function that determines if the next correction vector produced from the next SV is leading the algorithm in the proper direction
             void checkSolutionTolerance(Jacobian* );                                // After calcNextSV accepts the new SV, this function determines if the solution is within the overall tolerance for the problem
@@ -38,9 +38,9 @@ public:
         // Error handling function????
 
         // -------- Might move these functions to a new class (helper class) -------- //
-        void printInt(int theIntValue); 
-        void printDouble(double theIntValue);
-        void printMatrix(MatrixXd theMatrix);
+        void printInt(int theIntValue);                                             // (Placeholder)
+        void printDouble(double theIntValue);                                       // (Placeholder)
+        void printMatrix(MatrixXd theMatrix);                                       // (Placeholder)
     
     // Variables
         bool foundSolution;                                                         // Logic variable used to stop/repeat the MDNM
@@ -59,9 +59,9 @@ public:
         double relTol;                                                              // Relative tolerance for the solution
         double currentNorm, tempNorm, nextNorm;                                     // Current, temporary, and next norm of the correction vector
 
-        int numIterations;
+        int numIterations;                                                          // Number of times the Newton Iteration has been performed (I think)
 
-        BoundaryValueProblem *BVPpointer;
+        BoundaryValueProblem *BVPpointer; //************ Does this need to be here? Idk why this is here
 };
 
 #endif

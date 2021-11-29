@@ -7,7 +7,7 @@ This is a class that contains all variables and functions needed to calculate th
 #define MESH_H
 
 #include <iostream>
-#include "toolsFolder\\eigen-3.4.0\\Eigen\\Eigen"
+#include <Eigen/Eigen>
 
 using namespace std;
 using namespace Eigen;
@@ -21,7 +21,7 @@ public:
     // Functions
         void initializeMesh();              // Using user inputs, this function initailizes/calculates the mesh vectors used in later calculations
         void calculateSurfaceLocation();    // Function that calculates the location of the interface bewteen mesh points
-        void refineMesh();                  // Function that performs/calls all mesh refinement tasks
+        void refineMesh(MatrixXd*);         // Function that performs/calls all mesh refinement tasks
         void checkFirstOrderTol();          // This names should be changed to better represent the check
         void checkSecondOrderTol();         // This names should be changed to better represent the check
 

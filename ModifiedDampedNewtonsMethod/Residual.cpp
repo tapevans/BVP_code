@@ -4,7 +4,7 @@
 
 Residual::Residual()
 {
-    // Define pointers used in residual calulation function 
+    // Define index reference to be used in residual calulation function 
     Nf = 0;
     Ng = 1; 
     NT = 2;
@@ -15,11 +15,9 @@ void Residual::totalSVCalc(Mesh* ptrMesh){
     totSV = (ptrMesh->jPoints) * (nVariables);
 }
 
-
 MatrixXd Residual::calculateResidual(MatrixXd SV, Mesh* ptrMesh)
 {
-    // Reshape the incoming vector (Resize is used for dynamic matricies ... I think)
-    //std::cout<<"\n This is the SV before calcRes resize:\n" << SV << std::endl;
+    // Reshape the incoming vector
     SV.resize(nVariables, ptrMesh->jPoints);
     
     // Reshape the residual matrix

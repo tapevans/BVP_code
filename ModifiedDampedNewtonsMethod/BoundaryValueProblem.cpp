@@ -100,10 +100,7 @@ void BoundaryValueProblem::performNewtonIteration(Mesh* ptrMesh, Residual* ptrRe
 }
 
 void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
-{
-
-    //std::cout<<"\tCalculating correction vector\n";
- 
+{ 
     // Calculate Residual
     ptrRes->currentRes = (ptrRes->calculateResidual(currentSV, ptrMesh));
     
@@ -186,7 +183,6 @@ void BoundaryValueProblem::calcNextSV(Mesh* ptrMesh, Residual* ptrRes, Jacobian*
 
 void BoundaryValueProblem::checkSVTrustRegion(MatrixXd tempSV) ////-------------- This function needs to be built
 {
-    //std::cout<<"\t\tChecking if all state variables are within the defined limits\n";
     SVWithinTrustRegion = true; 
 }
 
