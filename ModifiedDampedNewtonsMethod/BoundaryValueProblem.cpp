@@ -21,33 +21,6 @@ void BoundaryValueProblem::readUserInput()   // PLACEHOLDER
     std::cout<<"Reading user input \n";
 }
 
-void BoundaryValueProblem::initializeMatrixSize(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac){
-    ptrRes->totalSVCalc(ptrMesh);
-
-    // Mesh Matricies
-    ptrMesh->x.resize(1, ptrMesh->jPoints);                      
-    ptrMesh->xNegative.resize(1, ptrMesh->jPoints);              
-    ptrMesh->xPositive.resize(1, ptrMesh->jPoints);              
-
-    // Residual Matricies
-    ptrRes->BC.resize(ptrRes->nVariables, 2);                  
-    ptrRes->IC.resize(ptrRes->nVariables, 2);                  
-    ptrRes->currentRes.resize((ptrRes->totSV),1);
-    ptrRes->tempRes.resize((ptrRes->totSV),1);            
-    
-    // Jacobian Matricies
-    ptrJac->jac.resize((ptrRes->totSV) , (ptrRes->totSV));                
-    ptrJac->per.resize((ptrRes->totSV),1);                 
-    ptrJac->tempSV.resize((ptrRes->totSV),1);
-
-    // BVP Matricies 
-    currentSV.resize((ptrRes->totSV),1);                   
-    tempSV.resize((ptrRes->totSV),1);                      
-    nextSV.resize((ptrRes->totSV),1);                      
-    currentCorrectionVector.resize((ptrRes->totSV),1);     
-    nextCorrectionVector.resize((ptrRes->totSV),1);        
-}
-
 void BoundaryValueProblem::initialSolution(Mesh* ptrMesh, Residual* ptrRes)
 {
     std::cout<<"Setting the initial solution\n";
@@ -64,7 +37,8 @@ void BoundaryValueProblem::initialSolution(Mesh* ptrMesh, Residual* ptrRes)
                                 * ptrMesh->x(j) + ptrRes->IC(i,0); // Slope eqn for a line
         }
     }
-    currentSV.resize((ptrRes->totSV), 1);
+    int totSV = (*ptrMesh).jPoints * (*ptrRes).nVariables;
+    currentSV.resize(totSV, 1);
 }
 
 void BoundaryValueProblem::setFlags()   // PLACEHOLDER
@@ -101,8 +75,10 @@ void BoundaryValueProblem::performNewtonIteration(Mesh* ptrMesh, Residual* ptrRe
 
 void BoundaryValueProblem::calcCorrectionVector(Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 { 
+    int *ptrjPoints    = &((*ptrMesh).jPoints);
+    MatrixXd *ptrMeshX = &((*ptrMesh).x);
     // Calculate Residual
-    ptrRes->currentRes = (ptrRes->calculateResidual(currentSV, ptrMesh));
+    ptrRes->currentRes = (ptrRes->calculateResidual(currentSV, ptrMeshX, ptrjPoints));
     
     // Calculate Jacobian
     if (numIterations == 1)
@@ -189,9 +165,11 @@ void BoundaryValueProblem::checkSVTrustRegion(MatrixXd tempSV) ////-------------
 void BoundaryValueProblem::checkLookAhead(MatrixXd tempSV, Mesh* ptrMesh, Residual* ptrRes, Jacobian* ptrJac)
 {
     std::cout<<"\t\tChecking if the new state vector meets look ahead tolerance\n";
-    
+    int *ptrjPoints    = &((*ptrMesh).jPoints);
+    MatrixXd *ptrMeshX = &((*ptrMesh).x);
+
     // Calculate the next correction vector from the next SV
-    ptrRes->tempRes = (ptrRes->calculateResidual(tempSV, ptrMesh));
+    ptrRes->tempRes = (ptrRes->calculateResidual(tempSV, ptrMeshX, ptrjPoints));
     nextCorrectionVector = (ptrJac->jac.inverse()) * (-1*ptrRes->tempRes);
     
     //Calculate the norm of the current and next correction vectors

@@ -6,10 +6,10 @@ This is a class that contains all variables and functions needed to calculate th
 #ifndef RESIDUAL_H
 #define RESIDUAL_H
 
-#include "Mesh.h"
+#include <Eigen/Eigen>
 
 using namespace std;
-
+using namespace Eigen;
 
 class Residual
 {
@@ -18,8 +18,7 @@ public:
         Residual();                                     // Defines the pointers and number of dependent variables in the system when an instance of class Residual is created
 
     // Functions
-        void totalSVCalc(Mesh*);
-        MatrixXd calculateResidual(MatrixXd , Mesh*);   // Residual Function
+        MatrixXd calculateResidual(MatrixXd SV, MatrixXd* ptrMeshX, int* ptrjPoints);   // Residual Function
 
     // Variables
         int Nf, Ng, NT;                                 // Dependent variables' pointers
@@ -28,8 +27,6 @@ public:
         Matrix<double, Dynamic, 2> BC;                  // Boundary conditions for each dependent variable
         Matrix<double, Dynamic, 2> IC;                  // Initial guess/seeding for the algorithm
         MatrixXd currentRes, tempRes;                   // Residual vectors
-
-        int totSV;                                      // Total number of dependent variables (--------- may move this to the residual function)
 
         // Properties
         double Pr; //Prandtl number //Don't know if this should remain here***** 

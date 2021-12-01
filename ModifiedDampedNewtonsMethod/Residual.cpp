@@ -11,17 +11,13 @@ Residual::Residual()
     nVariables = 3;
 }
 
-void Residual::totalSVCalc(Mesh* ptrMesh){
-    totSV = (ptrMesh->jPoints) * (nVariables);
-}
-
-MatrixXd Residual::calculateResidual(MatrixXd SV, Mesh* ptrMesh)
+MatrixXd Residual::calculateResidual(MatrixXd SV, MatrixXd* ptrMeshX, int* ptrjPoints)
 {
     // Reshape the incoming vector
-    SV.resize(nVariables, ptrMesh->jPoints);
+    SV.resize(nVariables, *ptrjPoints);
     
     // Reshape the residual matrix
-    tempRes.resize(nVariables, ptrMesh->jPoints);
+    tempRes.resize(nVariables, *ptrjPoints);
 
     // Calculate the residual at the plate surface boundary ("plate" is specific to the Blasius)
     tempRes(Nf,0) = SV(Nf,0) - BC(Nf,0); 
@@ -29,23 +25,23 @@ MatrixXd Residual::calculateResidual(MatrixXd SV, Mesh* ptrMesh)
     tempRes(NT,0) = SV(NT,0) - BC(NT,0); 
 
     // Calculate the residual for interior mesh points
-    for(int j = 1; j < (ptrMesh->jPoints-1); j++)
+    for(int j = 1; j < (*ptrjPoints-1); j++)
     {
-        tempRes(Nf,j) = (SV(Nf,j) - SV(Nf,j-1))/ (ptrMesh->x(j) - ptrMesh->x(j-1)) - SV(Ng,j);
-        tempRes(Ng,j) = SV(Nf,j) * (SV(Ng,j) - SV(Ng,j-1)) /  (ptrMesh->x(j) - ptrMesh->x(j-1)) 
-                    + 2 * (SV(Ng,j - 1) - 2 * SV(Ng,j)  + SV(Ng,j + 1)) / ((ptrMesh->x(j) - ptrMesh->x(j-1))* (ptrMesh->x(j) - ptrMesh->x(j-1)));
-        tempRes(NT,j) = Pr * SV(Nf,j) * (SV(NT,j+1) - SV(NT,j))/ (ptrMesh->x(j) - ptrMesh->x(j-1))
-                    + 2 * (SV(NT,j - 1) - 2 * SV(NT,j)  + SV(NT,j + 1)) / ((ptrMesh->x(j) - ptrMesh->x(j-1))* (ptrMesh->x(j) - ptrMesh->x(j-1)));
+        tempRes(Nf,j) = (SV(Nf,j) - SV(Nf,j-1))/ ((*ptrMeshX)(j) - (*ptrMeshX)(j-1)) - SV(Ng,j);
+        tempRes(Ng,j) = SV(Nf,j) * (SV(Ng,j) - SV(Ng,j-1)) /  ((*ptrMeshX)(j) - (*ptrMeshX)(j-1)) 
+                    + 2 * (SV(Ng,j - 1) - 2 * SV(Ng,j)  + SV(Ng,j + 1)) / (((*ptrMeshX)(j) - (*ptrMeshX)(j-1))* ((*ptrMeshX)(j) - (*ptrMeshX)(j-1)));
+        tempRes(NT,j) = Pr * SV(Nf,j) * (SV(NT,j+1) - SV(NT,j))/ ((*ptrMeshX)(j) - (*ptrMeshX)(j-1))
+                    + 2 * (SV(NT,j - 1) - 2 * SV(NT,j)  + SV(NT,j + 1)) / (((*ptrMeshX)(j) - (*ptrMeshX)(j-1))* ((*ptrMeshX)(j) - (*ptrMeshX)(j-1)));
     }
 
     // Calculate the residual at the outer free flow boundary
-    tempRes(Nf,ptrMesh->jPoints-1) = (SV(Nf,ptrMesh->jPoints-1) - SV(Nf,ptrMesh->jPoints-2))/ (ptrMesh->x(ptrMesh->jPoints-1) - ptrMesh->x(ptrMesh->jPoints-2)) 
-                         - SV(Ng,ptrMesh->jPoints-1);
-    tempRes(Ng,ptrMesh->jPoints-1) =  SV(Ng,ptrMesh->jPoints-1) - BC(Ng,1);
-    tempRes(NT,ptrMesh->jPoints-1) =  SV(NT,ptrMesh->jPoints-1) - BC(NT,1);
+    tempRes(Nf,*ptrjPoints-1) = (SV(Nf,*ptrjPoints-1) - SV(Nf,*ptrjPoints-2))/ ((*ptrMeshX)(*ptrjPoints-1) - (*ptrMeshX)(*ptrjPoints-2)) 
+                         - SV(Ng,*ptrjPoints-1);
+    tempRes(Ng,*ptrjPoints-1) =  SV(Ng,*ptrjPoints-1) - BC(Ng,1);
+    tempRes(NT,*ptrjPoints-1) =  SV(NT,*ptrjPoints-1) - BC(NT,1);
 
     // Reshape the residual function to a vector form
-    tempRes.resize(nVariables*(ptrMesh->jPoints),1); // Not using the variable called totSV. Might be good not to use that so it's one less thing to change when refining the mesh
-    SV.resize(nVariables*(ptrMesh->jPoints),1); // Not using the variable called totSV. Might be good not to use that so it's one less thing to change when refining the mesh
+    tempRes.resize(nVariables*(*ptrjPoints),1); // Not using the variable called totSV. Might be good not to use that so it's one less thing to change when refining the mesh
+    SV.resize(nVariables*(*ptrjPoints),1); // Not using the variable called totSV. Might be good not to use that so it's one less thing to change when refining the mesh
     return tempRes;
 }

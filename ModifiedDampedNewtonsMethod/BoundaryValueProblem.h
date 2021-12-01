@@ -23,7 +23,6 @@ public:
 
     // Functions
         void readUserInput();                                                       // (Placeholder) Reads the users input from a text file 
-        void initializeMatrixSize(Mesh*, Residual*, Jacobian*);                     // Sets the size of all matrix used throughout the solver
         void initialSolution(Mesh*, Residual*);                                     // Using the initial guess values found in the residual class, this function defines the SV at each mesh location using linear distribution scheme
             void setFlags();                                                        // (Placeholder) for future
             void setDependentVariableLimits();                                      // (Placeholder) for future
@@ -60,8 +59,6 @@ public:
         double currentNorm, tempNorm, nextNorm;                                     // Current, temporary, and next norm of the correction vector
 
         int numIterations;                                                          // Number of times the Newton Iteration has been performed (I think)
-
-        BoundaryValueProblem *BVPpointer; //************ Does this need to be here? Idk why this is here
 };
 
 #endif

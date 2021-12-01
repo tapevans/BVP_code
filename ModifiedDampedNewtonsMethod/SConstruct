@@ -1,13 +1,20 @@
-env = Environment(TARGET_ARCH='amd64', MSVC_VERSION='14.2')
+#env = Environment(TARGET_ARCH='amd64', MSVC_VERSION='14.2')
+#
+#env['CXX'] = '$CC'
+#env.Append(CCFLAGS=['/MD', '/nologo', '/D_SCL_SECURE_NO_WARNINGS', '/D_CRT_SECURE_NO_WARNINGS', '/Zi', '/Fd${TARGET}.pdb', '/EHsc'],
+#           CPPPATH=['C:\\Users\\gkoge\\Desktop\\BVP_class\\BVP_code\\ModifiedDampedNewtonsMethod\\toolsFolder\\eigen-3.4.0'],
+#           INCLUDEPATH=['C:\\Users\\gkoge\\Desktop\\BVP_class\\BVP_code\\ModifiedDampedNewtonsMethod\\toolsFolder\\eigen-3.4.0'],
+#           LIBS=[],
+#           LIBPATH=['C:\\Users\\gkoge\\Desktop\\BVP_class\\BVP_code\\ModifiedDampedNewtonsMethod\\toolsFolder\\eigen-3.4.0'],
+#           LINKFLAGS=['/nologo', '/DEBUG', '/NODEFAULTLIB:MSVCRTD'],
+#           FRAMEWORKS=[])
+#
+#program = env.Program('BVP', ['mainBVP.cpp', 'BoundaryValueProblem.cpp', 'Mesh.cpp', 'Residual.cpp', 'Jacobian.cpp'])
+#Default(program)
 
-env['CXX'] = '$CC'
-env.Append(CCFLAGS=['/MD', '/nologo', '/D_SCL_SECURE_NO_WARNINGS', '/D_CRT_SECURE_NO_WARNINGS', '/Zi', '/Fd${TARGET}.pdb', '/EHsc'],
-           CPPPATH=['C:\\Users\\gkoge\\Desktop\\BVP_class\\BVP_code\\ModifiedDampedNewtonsMethod\\toolsFolder\\eigen-3.4.0'],
-           INCLUDEPATH=['C:\\Users\\gkoge\\Desktop\\BVP_class\\BVP_code\\ModifiedDampedNewtonsMethod\\toolsFolder\\eigen-3.4.0'],
-           LIBS=[],
-           LIBPATH=['C:\\Users\\gkoge\\Desktop\\BVP_class\\BVP_code\\ModifiedDampedNewtonsMethod\\toolsFolder\\eigen-3.4.0'],
-           LINKFLAGS=['/nologo', '/DEBUG', '/NODEFAULTLIB:MSVCRTD'],
-           FRAMEWORKS=[])
+#Program('BVP.exe', ['mainBVP.cpp' , 'Mesh.cpp'] , CPPPATH = ['F:\\TylerFiles\\GitHubRepos\\toolsFolder\\eigen-3.4.0']) 
+#Program('BVP.exe', ['mainBVP.cpp' , 'Mesh.cpp' , 'Residual.cpp'] , CPPPATH = ['F:\\TylerFiles\\GitHubRepos\\toolsFolder\\eigen-3.4.0']) 
+#Program('BVP.exe', ['mainBVP.cpp' , 'Mesh.cpp' , 'Residual.cpp' , 'Jacobian.cpp'] , CPPPATH = ['F:\\TylerFiles\\GitHubRepos\\toolsFolder\\eigen-3.4.0']) 
+Program('BVP.exe', ['mainBVP.cpp' , 'Mesh.cpp' , 'Residual.cpp' , 'Jacobian.cpp' , 'BoundaryValueProblem.cpp'] , CPPPATH = ['F:\\TylerFiles\\GitHubRepos\\toolsFolder\\eigen-3.4.0']) 
 
-program = env.Program('BVP', ['mainBVP.cpp', 'BoundaryValueProblem.cpp', 'Mesh.cpp', 'Residual.cpp', 'Jacobian.cpp'])
-Default(program)
+#g++ -I F:\\TylerFiles\\GitHubRepos\\toolsFolder\\eigen-3.4.0 mainBVP.cpp Mesh.cpp -o BVP.exe

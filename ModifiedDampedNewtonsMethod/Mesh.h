@@ -25,11 +25,10 @@ public:
         void checkFirstOrderTol();          // This names should be changed to better represent the check
         void checkSecondOrderTol();         // This names should be changed to better represent the check
 
-
     // Variables
-        RowVectorXd x;                      // Vector containing the locations of each mesh point
-        RowVectorXd xNegative;              // Vector containing the loction of negative interface between mesh points
-        RowVectorXd xPositive;              // Vector containing the loction of positive interface between mesh points
+        MatrixXd x;                      // Vector containing the locations of each mesh point
+        MatrixXd xNegative;              // Vector containing the loction of negative interface between mesh points
+        MatrixXd xPositive;              // Vector containing the loction of positive interface between mesh points
         
         int jPoints;                        // Number of mesh points
 

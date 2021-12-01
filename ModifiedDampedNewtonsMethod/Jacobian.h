@@ -5,8 +5,8 @@ This is a class that contains all variables and functions needed to calculate th
 #ifndef JACOBIAN_H
 #define JACOBIAN_H
 
-#include "Residual.h"
-#include "Mesh.h"
+#include "Residual.h" 
+#include "Mesh.h" 
 
 #include <iostream>
 #include <fstream>
@@ -20,12 +20,12 @@ public:
     
     // Functions
         void calculateJacobian(MatrixXd, Mesh*, Residual*); // Parent function that calls all necessary functions to calculate the Jacobian
-            void calculatePerturbation(MatrixXd, Residual*);// Function that determines that perturbed value for each SV
+            void calculatePerturbation(MatrixXd, int);      // Function that determines that perturbed value for each SV
 
     // Variables
         MatrixXd jac;                                       // Jacobian matrix
         MatrixXd per;                                       // Perturbation values vector
-        MatrixXd tempSV;
+        MatrixXd tempSV;                                    // Temporary Solution Vector
 
         double absPer;                                      // Absolute pertubation value for the jacobian
         double relPer;                                      // Relative pertubation value for the jacobian
