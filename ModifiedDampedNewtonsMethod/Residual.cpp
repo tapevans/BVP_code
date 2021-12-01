@@ -45,7 +45,7 @@ MatrixXd Residual::calculateResidual(MatrixXd SV, Mesh* ptrMesh)
     tempRes(NT,ptrMesh->jPoints-1) =  SV(NT,ptrMesh->jPoints-1) - BC(NT,1);
 
     // Reshape the residual function to a vector form
-    tempRes.resize(nVariables*(ptrMesh->jPoints),1);
-    SV.resize(nVariables*(ptrMesh->jPoints),1);
+    tempRes.resize(nVariables*(ptrMesh->jPoints),1); // Not using the variable called totSV. Might be good not to use that so it's one less thing to change when refining the mesh
+    SV.resize(nVariables*(ptrMesh->jPoints),1); // Not using the variable called totSV. Might be good not to use that so it's one less thing to change when refining the mesh
     return tempRes;
 }
